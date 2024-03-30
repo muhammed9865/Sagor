@@ -2,7 +2,9 @@ package com.salman.sagor.presentation.navigation.graphs
 
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
+import androidx.navigation.compose.composable
 import com.salman.sagor.presentation.navigation.NavigationGraph
+import com.salman.sagor.presentation.screen.onboarding.OnboardingScreen
 
 /**
  * Created by Muhammed Salman email(mahmadslman@gmail.com) on 3/30/2024.
@@ -10,6 +12,10 @@ import com.salman.sagor.presentation.navigation.NavigationGraph
 object OnboardingGraph : NavigationGraph(startDestination = "onboarding", route = "onboarding") {
 
     override fun navigation(navController: NavController, navGraphBuilder: NavGraphBuilder) {
-        TODO("Not yet implemented")
+        navGraphBuilder.apply {
+            composable("onboarding") {
+                OnboardingScreen()
+            }
+        }
     }
 }

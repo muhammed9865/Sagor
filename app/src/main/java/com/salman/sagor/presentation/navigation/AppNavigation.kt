@@ -2,6 +2,9 @@ package com.salman.sagor.presentation.navigation
 
 import android.content.Intent
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import com.salman.sagor.presentation.navigation.graphs.AuthGraph
@@ -17,11 +20,17 @@ import com.salman.sagor.presentation.navigation.graphs.OnboardingGraph
 fun AppNavigation(intent: Intent? = null) {
     val navController = rememberNavController()
     val graphs = listOf(
+        OnboardingGraph,
         MainGraph,
-        AuthGraph,
-        OnboardingGraph
+        AuthGraph
     )
-    NavHost(navController = navController, startDestination = graphs.first().route) {
-        graphs.forEach { it.navigation(navController, this) }
+    CompositionLocalProvider(LocalNavigator provides navController) {
+        NavHost(navController = navController, startDestination = graphs.first().route) {
+            graphs.forEach { it.navigation(navController, this) }
+        }
     }
+}
+
+val LocalNavigator = staticCompositionLocalOf<NavHostController> {
+    error("LocalNavigator not initialized")
 }
