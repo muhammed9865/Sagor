@@ -20,8 +20,8 @@ import com.salman.sagor.presentation.navigation.graphs.OnboardingGraph
 fun AppNavigation(intent: Intent? = null) {
     val navController = rememberNavController()
     val graphs = listOf(
-        OnboardingGraph,
         MainGraph,
+        OnboardingGraph,
         AuthGraph
     )
     CompositionLocalProvider(LocalNavigator provides navController) {

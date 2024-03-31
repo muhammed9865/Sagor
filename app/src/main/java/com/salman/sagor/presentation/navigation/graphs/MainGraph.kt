@@ -7,6 +7,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navDeepLink
 import androidx.navigation.navigation
 import com.salman.sagor.presentation.navigation.NavigationGraph
+import com.salman.sagor.presentation.screen.home.HomeScreen
 
 /**
  * Created by Muhammed Salman email(mahmadslman@gmail.com) on 3/29/2024.
@@ -26,10 +27,7 @@ object MainGraph : NavigationGraph(startDestination = "home", route = "main") {
                         }
                     )
                 ) {
-                    val id = it.arguments?.getString("id")
-                    val text =
-                        if (id != null) "Home Screen From Pending Intent $id" else "Home Screen"
-                    Text(text = text)
+                    HomeScreen()
                 }
             }
         }
