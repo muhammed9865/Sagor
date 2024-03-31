@@ -4,4 +4,6 @@
     <string name="onboarding_2_description">Get alerts for changes in water conditions to keep your fish healthy.</string>
     <string name="onboarding_3_description">Track behavior, ensure aquatic well-being</string>
     <string name="onboarding_finish">Finish</string>
+    <string name="login">Login</string>
+    <string name="verify">Verify</string>
 </resources>

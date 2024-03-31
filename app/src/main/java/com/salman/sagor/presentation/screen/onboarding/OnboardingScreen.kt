@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -24,6 +23,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.salman.sagor.R
+import com.salman.sagor.presentation.composable.SPrimaryButton
 import com.salman.sagor.presentation.composable.Screen
 import com.salman.sagor.presentation.model.OnboardingPage
 import com.salman.sagor.presentation.navigation.LocalNavigator
@@ -74,7 +74,11 @@ private fun OnboardingSlider(
             modifier = Modifier.fillMaxSize(),
         ) {
             val page = OnboardingPage[it]
-            PageContent(page = page, isLastPage = it == pagerState.pageCount - 1, onAction = onAction)
+            PageContent(
+                page = page,
+                isLastPage = it == pagerState.pageCount - 1,
+                onAction = onAction
+            )
         }
     }
 }
@@ -102,12 +106,10 @@ private fun PageContent(
         )
         if (isLastPage) {
             Spacer(modifier = Modifier.height(32.dp))
-            Button(
-                onClick = { onAction(OnboardingAction.OnFinish) },
-                modifier = Modifier.fillMaxWidth(),
-                shape = MaterialTheme.shapes.small
+            SPrimaryButton(
+                text = stringResource(id = R.string.onboarding_finish)
             ) {
-                Text(text = stringResource(id = R.string.onboarding_finish))
+                onAction(OnboardingAction.OnFinish)
             }
         }
     }
