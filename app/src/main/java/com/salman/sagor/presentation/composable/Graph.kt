@@ -1,14 +1,20 @@
 package com.salman.sagor.presentation.composable
 
+import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import android.graphics.Paint
-import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.MutableTransitionState
+import android.graphics.PointF
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
@@ -19,8 +25,8 @@ import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import kotlin.random.Random
 
 /**
  * Created by Muhammed Salman email(mahmadslman@gmail.com) on 3/31/2024.
@@ -45,6 +51,7 @@ fun Graph(
     ) {
         val width = size.width
         val height = size.height
+
 
         drawIntoCanvas { canvas ->
             // Draw x-axis values
@@ -112,60 +119,118 @@ fun Graph(
 
 }
 
-@Preview(showBackground = true)
+@Composable
+fun GraphSecond(
+    modifier: Modifier = Modifier,
+    xValues: List<Int>,
+    yValues: List<Int>,
+    points: List<Float>,
+    padding: Dp = 30.dp,
+) {
+    Box(
+        modifier = modifier
+            .clip(MaterialTheme.shapes.small)
+            .background(MaterialTheme.colorScheme.background)
+            .shadow(2.dp)
+
+    ) {
+        val textColor = MaterialTheme.colorScheme.onBackground.toArgb()
+        Canvas(modifier = Modifier.fillMaxSize()) {
+            val nativeCanvas = drawContext.canvas.nativeCanvas
+            val xAxisStepSize = (size.width - padding.toPx()) / xValues.size
+            val yAxisStepSize = size.height / (yValues.size + 1)
+            val textPaint = Paint().apply {
+                color = textColor
+                textSize = 40f
+            }
+
+            println("Size: w${size.width} h${size.height}")
+
+            // These are used for drawing the Bezier curve
+            val controlPoints1 = mutableListOf<PointF>()
+            val controlPoints2 = mutableListOf<PointF>()
+            val coordinates = mutableListOf<PointF>()
+
+            xValues.forEachIndexed { index, i ->
+                nativeCanvas.drawText(
+                    i.toString(),
+                    xAxisStepSize * (index + 1),
+                    size.height - 20,
+                    textPaint
+                )
+            }
+
+            yValues.forEachIndexed { index, i ->
+                nativeCanvas.drawText(
+                    i.toString(),
+                    padding.toPx() / 4f,
+                    size.height - (yAxisStepSize * (index + 1)),
+                    textPaint
+
+                )
+            }
+
+            for (i in points.indices) {
+                val x1 = xAxisStepSize  * xValues[i] + 10
+                val y1 = size.height - (yAxisStepSize * ((points[i]) ))
+                coordinates.add(PointF(x1,y1))
+                /** drawing circles to indicate all the points */
+                drawCircle(
+                    color = Color.Red,
+                    radius = 10f,
+                    center = Offset(x1,y1)
+                )
+            }
+
+            // Used for drawing the Bezier curve
+            for (i in 1 until coordinates.size) {
+                val c1 = PointF(
+                    (coordinates[i].x + coordinates[i-1].x) / 2,
+                    coordinates[i - 1].y
+                )
+                val c2 = PointF(
+                    (coordinates[i].x + coordinates[i-1].x) / 2,
+                    coordinates[i].y
+                )
+                controlPoints1.add(c1)
+                controlPoints2.add(c2)
+            }
+
+            val stroke = Path().apply {
+                reset()
+                if (controlPoints1.isNotEmpty() && controlPoints2.isNotEmpty()) {
+                    moveTo(coordinates.first().x, coordinates.first().y)
+                    for (i in 0 until  coordinates.size - 1) {
+                        cubicTo(
+                            controlPoints1[i].x, controlPoints1[i].y,
+                            controlPoints2[i].x, controlPoints2[i].y,
+                            coordinates[i + 1].x, coordinates[i + 1].y
+                        )
+                    }
+                }
+            }
+
+            drawPath(
+                stroke,
+                color = Color.Black,
+                style = Stroke(
+                    width = 5f,
+                    cap = StrokeCap.Round
+                )
+            )
+        }
+    }
+}
+
+@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES)
 @Composable
 fun GraphPreview() {
-    val points = listOf(
-        Pair(0, 0),
-        Pair(1, 3),
-        Pair(2, 2),
-        Pair(3, 4),
-        Pair(4, 5),
-        Pair(5, 7),
-        Pair(6, 21),
-        Pair(7, 3),
-        Pair(8, 14),
-        Pair(9, 7),
-        Pair(10, 28),
+    val points = listOf(1.5f, 2.4f, 3.6f, 4.5f, 2f, 5.3f)
+    val xValues = listOf(1, 2, 3, 4, 5, 6, 7)
+    val yValues = listOf(1, 2, 3, 4, 5, 6, 7, 9, 10, 12, 14, 15)
+
+    GraphSecond(
+        xValues = xValues, yValues = yValues, points = points,
+        modifier = Modifier.fillMaxWidth().height(500.dp)
     )
-    val points2 = listOf(
-        Pair(0, Random.nextInt(0, 20)),
-        Pair(1, Random.nextInt(0, 20)),
-        Pair(2, Random.nextInt(0, 20)),
-        Pair(3, Random.nextInt(0, 20)),
-        Pair(4, Random.nextInt(0, 20)),
-        Pair(5, Random.nextInt(0, 20)),
-        Pair(6, Random.nextInt(0, 20)),
-        Pair(7, Random.nextInt(0, 20)),
-        Pair(8, Random.nextInt(0, 20)),
-        Pair(9, Random.nextInt(0, 20)),
-        Pair(10, Random.nextInt(0, 20)),
-        Pair(11, Random.nextInt(0, 20)),
-        Pair(12, Random.nextInt(0, 20)),
-        Pair(13, Random.nextInt(0, 20)),
-        Pair(14, Random.nextInt(0, 20)),
-        Pair(15, Random.nextInt(0, 20)),
-        Pair(16, Random.nextInt(0, 20)),
-        Pair(17, Random.nextInt(0, 20)),
-        Pair(18, Random.nextInt(0, 20)),
-    )
-    val points3 = listOf(
-        Pair(0, Random.nextInt(0, 20)),
-        Pair(1, Random.nextInt(0, 20)),
-        Pair(2, Random.nextInt(0, 20)),
-        Pair(3, Random.nextInt(0, 20)),
-        Pair(4, Random.nextInt(0, 20)),
-        Pair(5, Random.nextInt(0, 20)),
-        Pair(6, Random.nextInt(0, 20)),
-        Pair(7, Random.nextInt(0, 20)),
-        Pair(8, Random.nextInt(0, 20)),
-        Pair(9, Random.nextInt(0, 20)),
-        Pair(10, Random.nextInt(0, 20)),
-    )
-    val graphPoints = listOf(
-        GraphPoints(points, Color(0xff3BB74F)),
-        GraphPoints(points2, Color(0xffCD3131)),
-        GraphPoints(points3, Color(0xff3B74B7)),
-    )
-    Graph(graphPoints = graphPoints)
 }

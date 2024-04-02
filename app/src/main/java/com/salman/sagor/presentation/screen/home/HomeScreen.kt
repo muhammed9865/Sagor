@@ -1,14 +1,20 @@
 package com.salman.sagor.presentation.screen.home
 
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.graphics.Color
-import com.salman.sagor.presentation.composable.Graph
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import com.salman.sagor.presentation.composable.GraphPoints
+import com.salman.sagor.presentation.composable.GraphSecond
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlin.math.ceil
+import kotlin.random.Random
 
 /**
  * Created by Muhammed Salman email(mahmadslman@gmail.com) on 3/30/2024.
@@ -18,37 +24,35 @@ import kotlinx.coroutines.launch
 fun HomeScreen() {
     val scope = rememberCoroutineScope()
     val graphPoints = remember {
-        mutableStateListOf<GraphPoints>()
+        mutableStateListOf<Float>()
     }
 
     scope.launch {
         while (true) {
             graphPoints.clear()
-            val p1 = getRandomPoints(10).run { GraphPoints(this, Color(0xFF023E8A)) }
-            val p2 = getRandomPoints(10).run { GraphPoints(this, Color(0xFFCD3131)) }
-            val p3 = getRandomPoints(10).run { GraphPoints(this, Color(0xFF3BB74F)) }
-            graphPoints.addAll(listOf(p1, p2, p3))
-            animateGraphPoints(graphPoints, listOf(p1, p2, p3))
+            graphPoints.addAll(getRandomPoints(5))
+            println(graphPoints)
             delay(2000L)
         }
     }
 
-    Graph(
-        graphPoints = graphPoints,
-        graphPadding = 30
+    GraphSecond(
+        xValues = listOf(1, 2, 3, 4, 5), yValues = listOf(1, 3, 5, 7, 9, 10), points = graphPoints,
+        modifier = Modifier.fillMaxWidth().height(200.dp)
     )
 }
 
-fun getRandomPoints(size: Int): List<Pair<Int, Int>> {
-    val points = mutableListOf<Pair<Int, Int>>()
-    repeat(size) {
-        points.add(Pair(it, (0..10).random()))
+fun getRandomPoints(size: Int): List<Float> {
+    return List(size) {
+        Random.nextDouble(0.0, 10.0).toFloat()
     }
-    return points
 }
 
 
-suspend fun animateGraphPoints(currentPoints: MutableList<GraphPoints>, newPoints: List<GraphPoints>) {
+suspend fun animateGraphPoints(
+    currentPoints: MutableList<GraphPoints>,
+    newPoints: List<GraphPoints>
+) {
     val startTime = System.currentTimeMillis()
     val duration = 1000L // Animation duration in milliseconds
 
@@ -74,8 +78,10 @@ fun interpolateGraphPoints(
     return currentPoints.mapIndexed { index, currentGraphPoints ->
         val newGraphPoints = newPoints[index]
         val interpolatedPoints = currentGraphPoints.points.mapIndexed { pointIndex, currentPoint ->
-            val newX = currentPoint.first + (newGraphPoints.points[pointIndex].first - currentPoint.first) * progress
-            val newY = currentPoint.second + (newGraphPoints.points[pointIndex].second - currentPoint.second) * progress
+            val newX =
+                currentPoint.first + (newGraphPoints.points[pointIndex].first - currentPoint.first) * progress
+            val newY =
+                currentPoint.second + (newGraphPoints.points[pointIndex].second - currentPoint.second) * progress
             newX.toInt() to newY.toInt()
         }
         GraphPoints(interpolatedPoints, currentGraphPoints.color)
