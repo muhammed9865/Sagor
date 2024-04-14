@@ -2,10 +2,7 @@ package com.salman.sagor.presentation.composable
 
 import android.graphics.PointF
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.ui.Modifier
@@ -25,38 +22,31 @@ import com.salman.sagor.presentation.model.GraphValues
  */
 
 @Composable
-fun GraphSecond(
+fun Graph(
     modifier: Modifier = Modifier,
     xValues: List<Int>,
     yValues: List<Int>,
     values: List<GraphValues>,
     padding: Dp = 5.dp,
 ) {
-    Surface(
-        modifier = modifier.padding(padding),
-        color = MaterialTheme.colorScheme.surface,
-        shape = MaterialTheme.shapes.medium,
-        shadowElevation = 5.dp,
+
+    val valuesAnimated = values.map {
+        animateListOfFloats(targetFractions = it.values)
+    }
+    Canvas(
+        modifier = modifier
+            .padding(padding)
     ) {
-        val valuesAnimated = values.map {
-            animateListOfFloats(targetFractions = it.values)
-        }
-        Canvas(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-        ) {
-            val xAxisStepSize = (size.width) / xValues.size
-            values.forEachIndexed { index, graphValues ->
-                drawPointsLine(
-                    points = valuesAnimated[index].slices,
-                    xValues = xValues,
-                    yValues = yValues,
-                    xAxisStepSize = xAxisStepSize,
-                    color = graphValues.color,
-                    drawCircles = true
-                )
-            }
+        val xAxisStepSize = (size.width) / xValues.size
+        values.forEachIndexed { index, graphValues ->
+            drawPointsLine(
+                points = valuesAnimated[index].slices,
+                xValues = xValues,
+                yValues = yValues,
+                xAxisStepSize = xAxisStepSize,
+                color = graphValues.color,
+                drawCircles = false
+            )
         }
     }
 }
@@ -67,10 +57,11 @@ private fun DrawScope.drawPointsLine(
     yValues: List<Int>,
     xAxisStepSize: Float,
     color: Color,
-    drawCircles: Boolean = true,
+    drawCircles: Boolean = false,
 ) {
     if (points.isEmpty()) return
 
+    val strokeWidth = size.minDimension * 0.05f
     val controlPoints1 = mutableListOf<PointF>()
     val controlPoints2 = mutableListOf<PointF>()
     val coordinates = mutableListOf<PointF>()
@@ -126,7 +117,7 @@ private fun DrawScope.drawPointsLine(
         stroke,
         color = color,
         style = Stroke(
-            width = 10f,
+            width = strokeWidth,
             cap = StrokeCap.Round
         )
     )
