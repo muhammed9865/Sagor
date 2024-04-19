@@ -1,6 +1,8 @@
 package com.salman.sagor.presentation.composable
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -26,6 +28,7 @@ fun Screen(
     modifier: Modifier = Modifier,
     onBackPressed: (() -> Unit)? = null,
     title: String? = null,
+    actions: @Composable (RowScope.() -> Unit)? = null,
     content: @Composable () -> Unit
 ) {
     Column(
@@ -33,9 +36,10 @@ fun Screen(
             .fillMaxSize()
             .padding(21.dp)
     ) {
-        if (onBackPressed != null || title != null) {
+        if (onBackPressed != null || title != null || actions != null) {
             CenterAlignedTopAppBar(
                 title = { title?.let { Text(text = it) } },
+                actions = actions ?: {},
                 navigationIcon = {
                     if (onBackPressed != null)
                         IconButton(onClick = onBackPressed) {
@@ -52,6 +56,8 @@ fun Screen(
                 )
             )
         }
-        content()
+        Box(modifier = Modifier.padding(top = 50.dp)) {
+            content()
+        }
     }
 }

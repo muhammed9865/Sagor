@@ -1,30 +1,33 @@
 package com.salman.sagor.presentation.screen.home
 
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
-import androidx.compose.foundation.background
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.salman.sagor.R
+import com.salman.sagor.domain.model.Pool
 import com.salman.sagor.presentation.composable.Graph
-import com.salman.sagor.presentation.composable.counter.ProgressCounter
-import com.salman.sagor.presentation.composable.counter.TextCounter
-import kotlin.random.Random
+import com.salman.sagor.presentation.composable.Screen
 
 /**
  * Created by Muhammed Salman email(mahmadslman@gmail.com) on 3/30/2024.
@@ -32,110 +35,73 @@ import kotlin.random.Random
 
 @Composable
 fun HomeScreen(
-    viewModel: GraphViewModel = hiltViewModel()
+    viewModel: HomeViewModel = hiltViewModel()
 ) {
+    val pools by viewModel.pools.collectAsState()
 
-    val points by viewModel.lines.collectAsState()
-    val progress by viewModel.progress.collectAsState()
-    val progressAnimated by animateFloatAsState(
-        targetValue = progress, label = "",
-        animationSpec = tween(500)
-    )
-
-    Column(
-        Modifier.padding(16.dp),
-        verticalArrangement = Arrangement.SpaceEvenly
+    Screen(
+        title = stringResource(R.string.home),
+        actions = {
+            IconButton(onClick = {}) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_notification),
+                    contentDescription = "Notification"
+                )
+            }
+        }
     ) {
-        Graph(
-            xValues = viewModel.xValues,
-            yValues = viewModel.yValues,
-            values = points,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(100.dp)
-
-        )
-
-        Row(
-            Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        LazyColumn(
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            Surface(
-                modifier = Modifier
-                    .weight(1f)
-                    .aspectRatio(1f),
-                shape = MaterialTheme.shapes.extraSmall,
-                color = MaterialTheme.colorScheme.surface,
-                shadowElevation = 5.dp
-            ) {
-                TextCounter(
-                    text = "$progressAnimated mg/L",
-                    textColor = Color(0xFF023E8A),
-                    boundaryValues = listOf(0, 75, 125, 200),
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(4.dp)
-                )
-            }
-
-            Surface(
-                modifier = Modifier
-                    .weight(1f)
-                    .aspectRatio(1f),
-                shape = MaterialTheme.shapes.extraSmall,
-                color = MaterialTheme.colorScheme.surface,
-                shadowElevation = 5.dp
-            ) {
-                ProgressCounter(
-                    progress = progressAnimated,
-                    maxValue = 200f,
-                    boundaryValues = listOf(0, 75, 125, 200),
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(4.dp)
-                )
-            }
-
-            Surface(
-                modifier = Modifier
-                    .weight(1f)
-                    .aspectRatio(1f),
-                shape = MaterialTheme.shapes.extraSmall,
-                color = MaterialTheme.colorScheme.surface,
-                shadowElevation = 5.dp
-            ) {
-                TextCounter(
-                    text = "$progressAnimated mg/L",
-                    textColor = Color(0xFF007813),
-                    boundaryValues = listOf(0, 75, 125, 200),
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(4.dp)
-                )
+            items(pools) {
+                PoolItem(pool = it) {
+                    // TODO: Navigate to pool details
+                }
             }
         }
     }
 }
 
 @Composable
-private fun CounterWrapper(
+private fun PoolItem(
+    pool: Pool,
     modifier: Modifier = Modifier,
-    content: @Composable () -> Unit
+    onClicked: () -> Unit = {}
 ) {
     Surface(
-        modifier = modifier
-            .background(MaterialTheme.colorScheme.surface)
-            .padding(16.dp),
-        shadowElevation = 5.dp,
-        shape = MaterialTheme.shapes.medium,
+        modifier
+            .fillMaxWidth()
+            .aspectRatio(1.7777f)
+            .clickable { onClicked() },
+        border = BorderStroke(1.dp, color = MaterialTheme.colorScheme.outline),
+        shape = MaterialTheme.shapes.small
     ) {
-        content()
+        Column(
+            Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Text(text = pool.name)
+            Graph(
+                xValues = pool.xValues,
+                yValues = pool.yValues,
+                values = pool.values,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+            )
+            OutlinedButton(
+                onClick = onClicked,
+                modifier = Modifier.fillMaxWidth(),
+                shape = MaterialTheme.shapes.small
+            ) {
+                Text(
+                    text = stringResource(R.string.view),
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
+        }
     }
 }
 
-fun getRandomPoints(size: Int): List<Float> {
-    return List(size) {
-        Random.nextDouble(0.0, 50.0).toFloat()
-    }
-}

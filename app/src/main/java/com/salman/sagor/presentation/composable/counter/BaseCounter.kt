@@ -122,7 +122,7 @@ private fun DrawScope.drawBoundaryValues(
     rightValuesColor: Color,
 ) {
     val canvas = drawContext.canvas.nativeCanvas
-    val textSize = size.minDimension * 0.08f
+    val textSize = size.minDimension * 0.1f
     val leftPaint = Paint().apply {
         color = leftValuesColor
     }.asFrameworkPaint().apply {
@@ -135,7 +135,7 @@ private fun DrawScope.drawBoundaryValues(
     }
 
     var degree = 135.0 // initially 135 as a start.
-    val stepSize = 360 / values.size // leave it divided by 4 for now, it should be values.size
+    val stepSize = 360 / maxOf(values.size, 4)
     val valueMargin = 30
 
     repeat(values.size) {

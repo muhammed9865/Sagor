@@ -61,7 +61,7 @@ private fun DrawScope.drawPointsLine(
 ) {
     if (points.isEmpty()) return
 
-    val strokeWidth = size.minDimension * 0.05f
+    val strokeWidth = size.minDimension * 0.02f
     val controlPoints1 = mutableListOf<PointF>()
     val controlPoints2 = mutableListOf<PointF>()
     val coordinates = mutableListOf<PointF>()
