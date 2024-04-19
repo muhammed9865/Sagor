@@ -6,4 +6,6 @@
     <string name="onboarding_finish">Finish</string>
     <string name="login">Login</string>
     <string name="verify">Verify</string>
+    <string name="home">Home</string>
+    <string name="view">View</string>
 </resources>
