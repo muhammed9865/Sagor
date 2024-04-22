@@ -21,6 +21,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.salman.sagor.domain.model.MetricValueType
+import com.salman.sagor.domain.model.PoolMetric
 import com.salman.sagor.presentation.composable.Graph
 import com.salman.sagor.presentation.composable.Screen
 import com.salman.sagor.presentation.composable.counter.ProgressCounter
@@ -40,6 +42,13 @@ private fun HomeScreenDemo() {
     val progressAnimated by animateFloatAsState(
         targetValue = progress, label = "",
         animationSpec = tween(500)
+    )
+    val metric = PoolMetric(
+        "Whatever",
+        progressAnimated,
+        200f,
+        listOf(0, 75, 125, 200),
+        MetricValueType.Progress,
     )
     Screen(title = "Home") {
         Column(
@@ -75,6 +84,7 @@ private fun HomeScreenDemo() {
                         text = "$progressAnimated mg/L",
                         textColor = Color(0xFF023E8A),
                         boundaryValues = listOf(0, 75, 125, 200),
+                        name = "Oxygen",
                         modifier = Modifier
                             .fillMaxSize()
                             .padding(4.dp)
@@ -90,9 +100,7 @@ private fun HomeScreenDemo() {
                     shadowElevation = 5.dp
                 ) {
                     ProgressCounter(
-                        progress = progressAnimated,
-                        maxValue = 200f,
-                        boundaryValues = listOf(0, 75, 125, 200),
+                        metric = metric,
                         modifier = Modifier
                             .fillMaxSize()
                             .padding(4.dp)
@@ -111,6 +119,7 @@ private fun HomeScreenDemo() {
                         text = "$progressAnimated mg/L",
                         textColor = Color(0xFF007813),
                         boundaryValues = listOf(0, 75, 125, 200),
+                        name = "pH",
                         modifier = Modifier
                             .fillMaxSize()
                             .padding(4.dp)

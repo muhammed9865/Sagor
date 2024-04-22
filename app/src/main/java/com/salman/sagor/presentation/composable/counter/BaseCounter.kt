@@ -38,6 +38,8 @@ fun BaseCounter(
     leftLinesColor: Color = Color(0xFF023E8A),
     rightLinesColor: Color = Color(0xFF8D1414),
     boundaryValues: List<Int>,
+    name: String? = null,
+    nameColor: Color? = null,
     content: @Composable () -> Unit
 ) {
     val minSize = 100.dp
@@ -70,6 +72,10 @@ fun BaseCounter(
                 leftBoundaryValuesColor,
                 rightBoundaryValuesColor
             )
+            name?.let {
+                val color = nameColor ?: leftLinesColor
+                drawName(it, color)
+            }
         }
         Box(
             modifier = Modifier
@@ -162,6 +168,28 @@ private fun DrawScope.drawBoundaryValues(
     }
 }
 
+private fun DrawScope.drawName(name: String, color: Color) {
+    val textSize = size.minDimension * 0.1f
+    val paint = Paint().apply {
+        this.color = color
+    }.asFrameworkPaint().apply {
+        this.textSize = textSize
+    }
+    val textMeasuredSize = paint.measureText(name)
+    val topLeft = Offset(
+        x = (size.width - textMeasuredSize) / 2f,
+        y = size.height + 10
+    )
+
+    val canvas = drawContext.canvas.nativeCanvas
+    canvas.drawText(
+        name,
+        topLeft.x,
+        topLeft.y,
+        paint
+    )
+}
+
 @Composable
 fun Int.pxToDp() = with(LocalDensity.current) {
     toDp()
@@ -177,6 +205,7 @@ private fun CircleCounterPrev() {
             rightBoundaryValuesColor = red,
             leftBoundaryValuesColor = green,
             boundaryValues = listOf(0, 100, 200, 300),
+            name = "Temperature",
             modifier = Modifier.size(100.dp)
         ) {
 

@@ -26,6 +26,8 @@ import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.withRotation
+import com.salman.sagor.domain.model.MetricValueType
+import com.salman.sagor.domain.model.PoolMetric
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.isActive
@@ -36,9 +38,7 @@ import kotlinx.coroutines.isActive
 @Composable
 fun ProgressCounter(
     modifier: Modifier = Modifier,
-    progress: Float,
-    maxValue: Float,
-    boundaryValues: List<Int>,
+    metric: PoolMetric
 ) {
     val red = Color(0xFFD91E0B)
     val green = Color(0xFF3BB74F)
@@ -46,15 +46,16 @@ fun ProgressCounter(
         BaseCounter(
             rightBoundaryValuesColor = red,
             leftBoundaryValuesColor = green,
-            boundaryValues = boundaryValues,
+            boundaryValues = metric.boundaryValues,
+            name = metric.name,
         ) {
             Box(
                 contentAlignment = Alignment.Center,
             ) {
                 Canvas(modifier = Modifier.fillMaxSize()) {
                     drawProgressArc(listOf(green, red))
-                    drawIndicator(minOf(progress, maxValue), maxValue)
-                    drawProgressText(progress)
+                    drawIndicator(minOf(metric.value, metric.maxValue), metric.maxValue)
+                    drawProgressText(metric.value)
                 }
             }
         }
@@ -154,16 +155,19 @@ private fun ProgressCounterPrev() {
         }
     }
     // create boundary values from 0 to max value and each value ia a step of 50
-    val stepValue = (maxVal / 4).toInt()
-    val boundaries = List(4) { it * stepValue }
+    val metric = PoolMetric(
+        "Oxygen",
+        progressAnimated,
+        maxValue = 200f,
+        boundaryValues = listOf(0, 75, 125, 200),
+        MetricValueType.Progress,
+    )
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
         ProgressCounter(
-            progress = progressAnimated,
-            maxValue = maxVal,
-            boundaryValues = listOf(0, 75, 125, 200),
+            metric = metric,
             modifier = Modifier.size(200.dp)
         )
     }

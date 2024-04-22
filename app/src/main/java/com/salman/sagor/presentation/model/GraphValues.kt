@@ -7,6 +7,6 @@ import androidx.compose.ui.graphics.Color
  */
 data class GraphValues(
     val name: String,
-    val values: List<Float>,
+    val history: List<Float>,
     val color: Color,
 )

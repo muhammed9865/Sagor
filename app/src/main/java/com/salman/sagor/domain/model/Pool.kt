@@ -9,6 +9,7 @@ data class Pool(
     val id: Int,
     val name: String,
     val values: List<GraphValues>,
+    val metrics: List<PoolMetric>,
     val xValues: List<Int>,
     val yValues: List<Int>
 )

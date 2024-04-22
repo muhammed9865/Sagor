@@ -31,7 +31,7 @@ fun Graph(
 ) {
 
     val valuesAnimated = values.map {
-        animateListOfFloats(targetFractions = it.values)
+        animateListOfFloats(targetFractions = it.history)
     }
     Canvas(
         modifier = modifier

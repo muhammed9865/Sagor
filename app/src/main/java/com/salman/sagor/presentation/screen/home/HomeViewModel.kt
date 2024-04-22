@@ -2,7 +2,9 @@ package com.salman.sagor.presentation.screen.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.salman.sagor.domain.model.MetricValueType
 import com.salman.sagor.domain.model.Pool
+import com.salman.sagor.domain.model.PoolMetric
 import com.salman.sagor.presentation.composable.counter.RandomFloat
 import com.salman.sagor.presentation.composable.randomColor
 import com.salman.sagor.presentation.model.GraphValues
@@ -62,7 +64,7 @@ class HomeViewModel : ViewModel() {
             if (pool == null) {
                 val newPoints = List(3) {
                     GraphValues(
-                        values = getRandomPoints(xValues.size),
+                        history = getRandomPoints(xValues.size),
                         color = colors[it],
                         name = names[it]
                     )
@@ -73,6 +75,7 @@ class HomeViewModel : ViewModel() {
                     xValues = xValues,
                     yValues = yValues,
                     values = newPoints,
+                    metrics = getMetrics(),
                 )
             }
 
@@ -80,15 +83,31 @@ class HomeViewModel : ViewModel() {
         }
 
         fun update(): Pool {
+            val newMetricsValues = getMetrics().map { it.value }
             return pool!!.copy(
                 values = List(3) {
                     GraphValues(
-                        values = getRandomPoints(xValues.size),
+                        history = getRandomPoints(xValues.size),
                         color = colors[it],
                         name = names[it]
                     )
+                },
+                metrics = pool!!.metrics.mapIndexed { index, poolMetric ->
+                    poolMetric.copy(value = newMetricsValues[index])
                 }
             )
+        }
+
+        private fun getMetrics(): List<PoolMetric> {
+            return List(3) {
+                PoolMetric(
+                    name = names[it],
+                    value = Random.nextDouble(0.0, 200.0).toFloat(),
+                    maxValue = 200f,
+                    boundaryValues = listOf(0, 75, 125, 200),
+                    valueType = listOf(MetricValueType.Progress, MetricValueType.Text).random()
+                )
+            }
         }
 
         private fun getRandomPoints(size: Int): List<Float> {

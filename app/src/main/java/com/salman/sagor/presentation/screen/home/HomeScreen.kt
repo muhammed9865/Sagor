@@ -28,6 +28,8 @@ import com.salman.sagor.R
 import com.salman.sagor.domain.model.Pool
 import com.salman.sagor.presentation.composable.Graph
 import com.salman.sagor.presentation.composable.Screen
+import com.salman.sagor.presentation.navigation.LocalNavigator
+import com.salman.sagor.presentation.navigation.graphs.MainGraph
 
 /**
  * Created by Muhammed Salman email(mahmadslman@gmail.com) on 3/30/2024.
@@ -38,6 +40,7 @@ fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     val pools by viewModel.pools.collectAsState()
+    val navigator = LocalNavigator.current
 
     Screen(
         title = stringResource(R.string.home),
@@ -55,7 +58,7 @@ fun HomeScreen(
         ) {
             items(pools) {
                 PoolItem(pool = it) {
-                    // TODO: Navigate to pool details
+                    navigator.navigate(MainGraph.Routes.pool(it.id))
                 }
             }
         }
