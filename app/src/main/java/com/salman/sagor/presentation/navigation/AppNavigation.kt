@@ -3,6 +3,7 @@ package com.salman.sagor.presentation.navigation
 import android.content.Intent
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -24,6 +25,11 @@ fun AppNavigation(intent: Intent? = null) {
         OnboardingGraph,
         AuthGraph
     )
+    LaunchedEffect(key1 = intent?.data) {
+        if (intent?.data != null) {
+            navController.navigate(intent.data.toString())
+        }
+    }
     CompositionLocalProvider(LocalNavigator provides navController) {
         NavHost(navController = navController, startDestination = graphs.first().route) {
             graphs.forEach { it.navigation(navController, this) }

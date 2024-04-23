@@ -24,6 +24,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.dropUnlessResumed
+import androidx.lifecycle.compose.dropUnlessStarted
 import com.salman.sagor.R
 import com.salman.sagor.domain.model.Pool
 import com.salman.sagor.presentation.composable.Graph
@@ -57,9 +59,9 @@ fun HomeScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             items(pools) {
-                PoolItem(pool = it) {
+                PoolItem(pool = it, onClicked = dropUnlessResumed {
                     navigator.navigate(MainGraph.Routes.pool(it.id))
-                }
+                })
             }
         }
     }

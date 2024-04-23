@@ -2,12 +2,6 @@
 <project version="4">
   <component name="deploymentTargetDropDown">
     <value>
-      <entry key="GraphPreview">
-        <State />
-      </entry>
-      <entry key="ProgressCounterPrev">
-        <State />
-      </entry>
       <entry key="app">
         <State>
           <targetSelectedWithDropDown>
@@ -16,12 +10,12 @@
               <deviceKey>
                 <Key>
                   <type value="VIRTUAL_DEVICE_PATH" />
-                  <value value="E:\androidEmulators\Pixel_7_API_32.avd" />
+                  <value value="$USER_HOME$/.android/avd/Pixel6API30.avd" />
                 </Key>
               </deviceKey>
             </Target>
           </targetSelectedWithDropDown>
-          <timeTargetWasSelectedWithDropDown value="2024-04-14T13:42:12.632251400Z" />
+          <timeTargetWasSelectedWithDropDown value="2024-04-23T19:02:18.453863499Z" />
         </State>
       </entry>
     </value>
