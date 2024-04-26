@@ -74,7 +74,7 @@ class HomeViewModel : ViewModel() {
                     name = name,
                     xValues = xValues,
                     yValues = yValues,
-                    values = newPoints,
+                    history = newPoints,
                     metrics = getMetrics(),
                 )
             }
@@ -85,7 +85,7 @@ class HomeViewModel : ViewModel() {
         fun update(): Pool {
             val newMetricsValues = getMetrics().map { it.value }
             return pool!!.copy(
-                values = List(3) {
+                history = List(3) {
                     GraphValues(
                         history = getRandomPoints(xValues.size),
                         color = colors[it],

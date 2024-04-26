@@ -8,7 +8,7 @@ import com.salman.sagor.presentation.model.GraphValues
 data class Pool(
     val id: Int,
     val name: String,
-    val values: List<GraphValues>,
+    val history: List<GraphValues>,
     val metrics: List<PoolMetric>,
     val xValues: List<Int>,
     val yValues: List<Int>

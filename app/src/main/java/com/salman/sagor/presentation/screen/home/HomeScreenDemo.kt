@@ -60,7 +60,7 @@ private fun HomeScreenDemo() {
             Graph(
                 xValues = pools[0].xValues,
                 yValues = pools[0].yValues,
-                values = pools[0].values,
+                values = pools[0].history,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(100.dp)

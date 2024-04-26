@@ -89,7 +89,7 @@ private fun PoolItem(
             Graph(
                 xValues = pool.xValues,
                 yValues = pool.yValues,
-                values = pool.values,
+                values = pool.history,
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f)

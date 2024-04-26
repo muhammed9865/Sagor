@@ -87,7 +87,7 @@ private fun PoolContent(pool: Pool) {
 
 @Composable
 private fun PoolGraph(pool: Pool, modifier: Modifier = Modifier) {
-    val namesAndColors = pool.values.map { it.name to it.color }
+    val namesAndColors = pool.history.map { it.name to it.color }
     Column(
         modifier
             .fillMaxWidth()
@@ -99,7 +99,7 @@ private fun PoolGraph(pool: Pool, modifier: Modifier = Modifier) {
                 .fillMaxWidth(),
             xValues = pool.xValues,
             yValues = pool.yValues,
-            values = pool.values,
+            values = pool.history,
         )
         Row(
             modifier = Modifier.fillMaxWidth(),
