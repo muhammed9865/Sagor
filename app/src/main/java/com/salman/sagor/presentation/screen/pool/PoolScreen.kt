@@ -91,12 +91,11 @@ private fun PoolGraph(pool: Pool, modifier: Modifier = Modifier) {
     Column(
         modifier
             .fillMaxWidth()
-            .aspectRatio(1 / 4f)
     ) {
         Graph(
             modifier = Modifier
-                .weight(1f)
-                .fillMaxWidth(),
+                .fillMaxWidth()
+                .aspectRatio(4 / 1.5f),
             xValues = pool.xValues,
             yValues = pool.yValues,
             values = pool.history,
