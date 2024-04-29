@@ -11,6 +11,8 @@ data class LoginState(
     val isVerifyingOtp: Boolean = false,
     val isOtpSent: Boolean = false,
     val otp: String = "",
+    val navigateToHome: Boolean = false,
+    val message: String = "",
 ): UiState {
     val isPhoneNumberValid: Boolean
         get() = phoneNumber.replace(" ", "").length == 11

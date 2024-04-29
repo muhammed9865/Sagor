@@ -6,7 +6,6 @@ import com.salman.sagor.domain.model.User
 import com.salman.sagor.domain.model.UserSendOTPStatus
 import com.salman.sagor.domain.model.UserVerifyOTPStatus
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -28,28 +27,37 @@ class UserRepository @Inject constructor(
         if (isUserLoggedIn())
             return@withContext Result.success(Unit)
 
-        val isSent = userRemoteDataSource.sendOTP(phoneNumber) is UserSendOTPStatus.OTPSent
-        return@withContext if (isSent) {
-            Result.success(Unit)
-        } else {
-            Result.failure(Exception("Failed to send OTP"))
+        return@withContext runCatching {
+            val isSent = userRemoteDataSource.sendOTP(phoneNumber) is UserSendOTPStatus.OTPSent
+            if (isSent.not()) {
+                throw Exception("OTP not sent")
+            }
         }
     }
 
     suspend fun verifyOTP(phoneNumber: String, otp: String): Result<Unit> {
         val verificationStatus = userRemoteDataSource.verifyOTP(phoneNumber, otp)
-        return when (verificationStatus) {
-            is UserVerifyOTPStatus.OTPNotValid -> Result.failure(Exception("OTP is not valid"))
-            is UserVerifyOTPStatus.UserNotFound -> Result.failure(Exception("User not found"))
-            is UserVerifyOTPStatus.OTPVerified -> {
-                userLocalDataSource.accessToken = verificationStatus.accessToken
-                userLocalDataSource.refreshToken = verificationStatus.refreshToken
-                Result.success(Unit)
+        return runCatching {
+            when (verificationStatus) {
+                is UserVerifyOTPStatus.OTPNotValid -> throw Exception("OTP is not valid")
+                is UserVerifyOTPStatus.UserNotFound -> throw Exception("User not found")
+                is UserVerifyOTPStatus.OTPVerified -> {
+                    userLocalDataSource.accessToken = verificationStatus.accessToken
+                    userLocalDataSource.refreshToken = verificationStatus.refreshToken
+                }
             }
         }
     }
 
     suspend fun isUserLoggedIn(): Boolean = withContext(Dispatchers.IO) {
         userLocalDataSource.accessToken != null
+    }
+
+    suspend fun isOnboardingCompleted(): Boolean = withContext(Dispatchers.IO) {
+        userLocalDataSource.onboardingCompleted
+    }
+
+    suspend fun completeOnboarding() = withContext(Dispatchers.IO) {
+        userLocalDataSource.onboardingCompleted = true
     }
 }

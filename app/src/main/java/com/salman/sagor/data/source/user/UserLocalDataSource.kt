@@ -14,6 +14,7 @@ class UserLocalDataSource @Inject constructor(
         private const val PREF_NAME = "user_pref"
         private const val KEY_ACCESS_TOKEN = "access_token"
         private const val KEY_REFRESH_TOKEN = "refresh_token"
+        private const val KEY_ONBOARDING_COMPLETED = "onboarding_completed"
     }
 
     private val pref = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
@@ -28,5 +29,11 @@ class UserLocalDataSource @Inject constructor(
         get() = pref.getString(KEY_REFRESH_TOKEN, null)
         set(value) {
             pref.edit().putString(KEY_REFRESH_TOKEN, value).apply()
+        }
+
+    var onboardingCompleted: Boolean
+        get() = pref.getBoolean(KEY_ONBOARDING_COMPLETED, false)
+        set(value) {
+            pref.edit().putBoolean(KEY_ONBOARDING_COMPLETED, value).apply()
         }
 }
