@@ -12,7 +12,7 @@ import com.salman.sagor.presentation.screen.pool.PoolScreen
 /**
  * Created by Muhammed Salman email(mahmadslman@gmail.com) on 3/29/2024.
  */
-object MainGraph : NavigationGraph(startDestination = Routes.home, route = "main") {
+object MainGraph : NavigationGraph(startDestination = Routes.home, route = Graphs.main) {
 
     object Routes {
         const val home = "home"
