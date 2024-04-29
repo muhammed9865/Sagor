@@ -7,7 +7,7 @@ import javax.inject.Inject
  * Created by Muhammed Salman email(mahmadslman@gmail.com) on 4/26/2024.
  */
 class UserLocalDataSource @Inject constructor(
-    private val context: Context,
+    context: Context,
 ) {
 
     companion object {

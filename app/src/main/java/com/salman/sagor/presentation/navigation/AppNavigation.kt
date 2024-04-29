@@ -21,9 +21,9 @@ import com.salman.sagor.presentation.navigation.graphs.OnboardingGraph
 fun AppNavigation(intent: Intent? = null) {
     val navController = rememberNavController()
     val graphs = listOf(
+        AuthGraph,
         MainGraph,
-        OnboardingGraph,
-        AuthGraph
+        OnboardingGraph
     )
     LaunchedEffect(key1 = intent?.data) {
         if (intent?.data != null) {

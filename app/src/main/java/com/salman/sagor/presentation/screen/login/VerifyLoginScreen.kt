@@ -123,7 +123,10 @@ private fun FormSection(
             ),
             singleLine = true,
         )
-        SPrimaryButton(text = stringResource(R.string.verify), isLoading = state.isLoggingIn) {
+        SPrimaryButton(
+            text = stringResource(R.string.verify), isLoading = state.isVerifyingOtp,
+            isEnabled = state.isOtpValid
+        ) {
             onAction(LoginAction.VerifyOTP)
         }
         SClickableText(

@@ -1,5 +1,6 @@
 package com.salman.sagor.data.source.user
 
+import android.util.Log
 import com.salman.sagor.data.source.RemoteConstants.BASE_URL
 import com.salman.sagor.data.source.user.model.SendOTPDTO
 import com.salman.sagor.data.source.user.model.VerifyOTPDTO
@@ -11,6 +12,7 @@ import io.ktor.client.call.body
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.HttpResponse
+import io.ktor.client.statement.bodyAsText
 import io.ktor.http.HttpStatusCode
 import javax.inject.Inject
 
@@ -21,8 +23,12 @@ class UserRemoteDataSource @Inject constructor(
     private val client: HttpClient
 ) {
 
+    companion object {
+        private const val TAG = "UserRemoteDataSource"
+    }
+
     suspend fun sendOTP(phoneNumber: String): UserSendOTPStatus {
-        val result = client.post("$BASE_URL/user/verify-otp/") {
+        val result = client.post("$BASE_URL/user/send-otp/") {
             setBody(SendOTPDTO(phoneNumber))
         }
         return matchSendOTPStatus(result)
@@ -30,18 +36,19 @@ class UserRemoteDataSource @Inject constructor(
 
     suspend fun verifyOTP(phoneNumber: String, otp: String): UserVerifyOTPStatus {
         val result = client.post("$BASE_URL/user/verify-otp/") {
-            setBody(VerifyOTPDTO(phoneNumber, otp))
+            setBody(VerifyOTPDTO("01062024268", otp))
         }
         return mapVerifyOTPStatus(result)
     }
 
     private suspend fun matchSendOTPStatus(response: HttpResponse): UserSendOTPStatus {
         val status = response.body<Map<String, String>>()["message"] ?: ""
+        Log.d(TAG, "matchSendOTPStatus: $status")
         return when (status) {
             "OTP sent successfully" -> UserSendOTPStatus.OTPSent
             "OTP failed to send" -> UserSendOTPStatus.OTPNotSent
             "phone number is not valid" -> UserSendOTPStatus.PhoneNotValid
-            else -> throw IllegalStateException("Unknown status")
+            else -> throw IllegalStateException(response.bodyAsText())
         }
     }
 
@@ -52,7 +59,7 @@ class UserRemoteDataSource @Inject constructor(
                 "Wrong OTP" -> UserVerifyOTPStatus.OTPNotValid
                 "OTP is missing" -> UserVerifyOTPStatus.OTPNotValid
                 "User not found" -> UserVerifyOTPStatus.UserNotFound
-                else -> throw IllegalStateException("Unknown message")
+                else -> throw IllegalStateException(response.bodyAsText())
             }
         }
 

@@ -20,7 +20,7 @@ class LoginViewModel @Inject constructor(
             is LoginAction.LoginClicked -> { login() }
             is LoginAction.OtpChanged -> { updateOtp(action.otp) }
             is LoginAction.ResendOtpClicked -> { resendOtp() }
-            is LoginAction.VerifyOTP -> { }
+            is LoginAction.VerifyOTP -> { verifyOTP() }
             is LoginAction.NavigatedToVerification -> {
                 updateState { copy(isOtpSent = false) }
             }
@@ -60,7 +60,21 @@ class LoginViewModel @Inject constructor(
 
     private fun resendOtp() {
         viewModelScope.launch {
-            repository.resendOTP(state.value.phoneNumber)
+            repository.login(state.value.phoneNumber)
+        }
+    }
+
+    private fun verifyOTP() {
+        val phoneNumber = state.value.phoneNumber.replace(" ", "")
+        val otp = state.value.otp.replace(" ", "")
+        updateState {
+            copy(isVerifyingOtp = true)
+        }
+        viewModelScope.launch {
+            repository.verifyOTP(phoneNumber, otp)
+            updateState {
+                copy(isVerifyingOtp = false)
+            }
         }
     }
 }
