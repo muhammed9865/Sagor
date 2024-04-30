@@ -15,6 +15,7 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.salman.sagor.presentation.core.animateListOfFloats
+import com.salman.sagor.presentation.core.color
 import com.salman.sagor.presentation.model.GraphValues
 
 /**

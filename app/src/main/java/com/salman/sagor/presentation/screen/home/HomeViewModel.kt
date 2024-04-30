@@ -3,7 +3,7 @@ package com.salman.sagor.presentation.screen.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.salman.sagor.domain.model.MetricValueType
-import com.salman.sagor.domain.model.Pool
+import com.salman.sagor.domain.model.Tank
 import com.salman.sagor.domain.model.PoolMetric
 import com.salman.sagor.presentation.composable.counter.RandomFloat
 import com.salman.sagor.presentation.composable.randomColor
@@ -22,7 +22,7 @@ import kotlin.random.Random
 class HomeViewModel : ViewModel() {
     private val _progress = RandomFloat(200f)
     val progress = _progress.progress.asStateFlow()
-    private val mutablePools = MutableStateFlow<List<Pool>>(emptyList())
+    private val mutablePools = MutableStateFlow<List<Tank>>(emptyList())
     val pools = mutablePools.asStateFlow()
 
 
@@ -50,7 +50,7 @@ class HomeViewModel : ViewModel() {
 
 
     private class PoolGenerator(val id: Int, val name: String) {
-        private var pool: Pool? = null
+        private var tank: Tank? = null
         val xValues = listOf(1, 2, 3, 4, 5, 6, 7, 8)
         val yValues = listOf(1, 2, 3, 4, 5, 6, 7, 9, 10, 12, 14, 30)
         private val colors by lazy {
@@ -60,16 +60,15 @@ class HomeViewModel : ViewModel() {
         }
         private val names = listOf("Oxygen", "pH", "Temperature")
 
-        fun get(): Pool {
-            if (pool == null) {
+        fun get(): Tank {
+            if (tank == null) {
                 val newPoints = List(3) {
                     GraphValues(
                         history = getRandomPoints(xValues.size),
-                        color = colors[it],
                         name = names[it]
                     )
                 }
-                pool = Pool(
+                tank = Tank(
                     id = id,
                     name = name,
                     xValues = xValues,
@@ -79,20 +78,19 @@ class HomeViewModel : ViewModel() {
                 )
             }
 
-            return pool!!
+            return tank!!
         }
 
-        fun update(): Pool {
+        fun update(): Tank {
             val newMetricsValues = getMetrics().map { it.value }
-            return pool!!.copy(
+            return tank!!.copy(
                 history = List(3) {
                     GraphValues(
                         history = getRandomPoints(xValues.size),
-                        color = colors[it],
                         name = names[it]
                     )
                 },
-                metrics = pool!!.metrics.mapIndexed { index, poolMetric ->
+                metrics = tank!!.metrics.mapIndexed { index, poolMetric ->
                     poolMetric.copy(value = newMetricsValues[index])
                 }
             )

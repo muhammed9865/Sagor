@@ -5,7 +5,7 @@ import com.salman.sagor.presentation.model.GraphValues
 /**
  * Created by Muhammed Salman email(mahmadslman@gmail.com) on 4/19/2024.
  */
-data class Pool(
+data class Tank(
     val id: Int,
     val name: String,
     val history: List<GraphValues>,

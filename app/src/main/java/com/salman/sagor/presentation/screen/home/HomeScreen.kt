@@ -25,9 +25,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.dropUnlessResumed
-import androidx.lifecycle.compose.dropUnlessStarted
 import com.salman.sagor.R
-import com.salman.sagor.domain.model.Pool
+import com.salman.sagor.domain.model.Tank
 import com.salman.sagor.presentation.composable.Graph
 import com.salman.sagor.presentation.composable.Screen
 import com.salman.sagor.presentation.navigation.LocalNavigator
@@ -59,7 +58,7 @@ fun HomeScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             items(pools) {
-                PoolItem(pool = it, onClicked = dropUnlessResumed {
+                PoolItem(tank = it, onClicked = dropUnlessResumed {
                     navigator.navigate(MainGraph.Routes.pool(it.id))
                 })
             }
@@ -69,7 +68,7 @@ fun HomeScreen(
 
 @Composable
 private fun PoolItem(
-    pool: Pool,
+    tank: Tank,
     modifier: Modifier = Modifier,
     onClicked: () -> Unit = {}
 ) {
@@ -87,11 +86,11 @@ private fun PoolItem(
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            Text(text = pool.name)
+            Text(text = tank.name)
             Graph(
-                xValues = pool.xValues,
-                yValues = pool.yValues,
-                values = pool.history,
+                xValues = tank.xValues,
+                yValues = tank.yValues,
+                values = tank.history,
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f)

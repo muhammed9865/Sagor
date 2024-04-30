@@ -5,5 +5,5 @@ package com.salman.sagor.data.source
  */
 object RemoteConstants {
 
-    const val BASE_URL = "https://sagor.onrender.com"
+    const val BASE_URL = "https://sagor.onrender.com/api/v1/"
 }

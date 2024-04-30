@@ -32,7 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.salman.sagor.R
 import com.salman.sagor.domain.model.MetricValueType
-import com.salman.sagor.domain.model.Pool
+import com.salman.sagor.domain.model.Tank
 import com.salman.sagor.domain.model.PoolMetric
 import com.salman.sagor.presentation.composable.Graph
 import com.salman.sagor.presentation.composable.Screen
@@ -73,21 +73,21 @@ fun PoolScreen(
 }
 
 @Composable
-private fun PoolContent(pool: Pool) {
+private fun PoolContent(tank: Tank) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .background(MaterialTheme.colorScheme.background),
         verticalArrangement = Arrangement.spacedBy(32.dp)
     ) {
-        PoolGraph(pool)
-        MetricsSection(pool.metrics)
+        PoolGraph(tank)
+        MetricsSection(tank.metrics)
     }
 }
 
 @Composable
-private fun PoolGraph(pool: Pool, modifier: Modifier = Modifier) {
-    val namesAndColors = pool.history.map { it.name to it.color }
+private fun PoolGraph(tank: Tank, modifier: Modifier = Modifier) {
+    val namesAndColors = tank.history.map { it.name to it.color }
     Column(
         modifier
             .fillMaxWidth()
@@ -96,9 +96,9 @@ private fun PoolGraph(pool: Pool, modifier: Modifier = Modifier) {
             modifier = Modifier
                 .fillMaxWidth()
                 .aspectRatio(4 / 1.5f),
-            xValues = pool.xValues,
-            yValues = pool.yValues,
-            values = pool.history,
+            xValues = tank.xValues,
+            yValues = tank.yValues,
+            values = tank.history,
         )
         Row(
             modifier = Modifier.fillMaxWidth(),
