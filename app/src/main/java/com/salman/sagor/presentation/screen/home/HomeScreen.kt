@@ -12,6 +12,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
@@ -19,9 +20,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.dropUnlessResumed
@@ -40,7 +43,7 @@ import com.salman.sagor.presentation.navigation.graphs.MainGraph
 fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel()
 ) {
-    val pools by viewModel.pools.collectAsState()
+    val state by viewModel.state.collectAsState()
     val navigator = LocalNavigator.current
 
     Screen(
@@ -52,16 +55,24 @@ fun HomeScreen(
                     contentDescription = "Notification"
                 )
             }
-        }
+        },
+        onEnteringScreen = { viewModel.handleAction(HomeAction.Reload) },
+        onLeavingScreen = { viewModel.handleAction(HomeAction.StopFetching) }
     ) {
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            items(pools) {
+            items(state.tanks) {
                 PoolItem(tank = it, onClicked = dropUnlessResumed {
                     navigator.navigate(MainGraph.Routes.pool(it.id))
                 })
             }
+        }
+        if (state.showEmptyTanksList) {
+            EmptyTankList(onAction = viewModel::handleAction)
+        }
+        if (state.isLoading) {
+            LoadingTanks()
         }
     }
 }
@@ -88,9 +99,7 @@ private fun PoolItem(
         ) {
             Text(text = tank.name)
             Graph(
-                xValues = tank.xValues,
-                yValues = tank.yValues,
-                values = tank.history,
+                values = tank.packages.first().sensorsHistory,
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f)
@@ -106,6 +115,37 @@ private fun PoolItem(
                 )
             }
         }
+    }
+}
+
+@Composable
+private fun EmptyTankList(
+    modifier: Modifier = Modifier,
+    onAction: (HomeAction) -> Unit
+) {
+    Column(
+        modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = CenterHorizontally
+    ) {
+        Text(
+            text = stringResource(R.string.no_tanks_found_please_contact_us_for_more_information),
+            textAlign = TextAlign.Center
+        )
+        OutlinedButton(onClick = { onAction(HomeAction.Reload) }) {
+            Text(text = stringResource(R.string.reload))
+        }
+    }
+}
+
+@Composable
+private fun LoadingTanks() {
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = CenterHorizontally
+    ) {
+        LinearProgressIndicator()
     }
 }
 

@@ -1,7 +1,6 @@
 package com.salman.sagor.data.source.user
 
 import android.util.Log
-import com.salman.sagor.data.source.RemoteConstants.BASE_URL
 import com.salman.sagor.data.source.user.model.SendOTPDTO
 import com.salman.sagor.data.source.user.model.VerifyOTPDTO
 import com.salman.sagor.data.source.user.model.VerifyOTPResponse
@@ -28,14 +27,14 @@ class UserRemoteDataSource @Inject constructor(
     }
 
     suspend fun sendOTP(phoneNumber: String): UserSendOTPStatus {
-        val result = client.post("$BASE_URL/user/send-otp/") {
+        val result = client.post("/auth/send-otp/") {
             setBody(SendOTPDTO(phoneNumber))
         }
         return matchSendOTPStatus(result)
     }
 
     suspend fun verifyOTP(phoneNumber: String, otp: String): UserVerifyOTPStatus {
-        val result = client.post("$BASE_URL/user/verify-otp/") {
+        val result = client.post("/auth/verify-otp/") {
             setBody(VerifyOTPDTO("01062024268", otp))
         }
         return mapVerifyOTPStatus(result)

@@ -5,7 +5,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class Package(
+data class PackageDTO(
     @SerialName("camera_sensor_readings")
     val cameraSensorReadings: List<CameraSensorReading>,
     @SerialName("last_checked_at")

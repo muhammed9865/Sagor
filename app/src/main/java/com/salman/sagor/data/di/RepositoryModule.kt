@@ -8,7 +8,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import io.ktor.client.HttpClient
-import io.ktor.client.engine.cio.CIO
+import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.plugins.DefaultRequest
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.logging.ANDROID
@@ -16,8 +16,6 @@ import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.request.header
-import io.ktor.http.URLProtocol
-import io.ktor.http.encodedPath
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 import javax.inject.Singleton
@@ -32,7 +30,7 @@ class RepositoryModule {
     @Provides
     @Singleton
     fun provideKtorClient(): HttpClient {
-        return HttpClient(CIO) {
+        return HttpClient(OkHttp) {
             install(ContentNegotiation) {
                 json(Json {
                     isLenient = true
@@ -41,11 +39,6 @@ class RepositoryModule {
             }
             install(DefaultRequest) {
                 header("Content-Type", "application/json")
-                url {
-                    protocol = URLProtocol.HTTPS
-                    host = "sagor.onrender.com"
-                    encodedPath = "/api/v1/"
-                }
             }
             install(Logging) {
                 level = LogLevel.ALL

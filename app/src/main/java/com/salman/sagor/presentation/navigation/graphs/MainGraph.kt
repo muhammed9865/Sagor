@@ -2,7 +2,9 @@ package com.salman.sagor.presentation.navigation.graphs
 
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavType
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import androidx.navigation.navDeepLink
 import androidx.navigation.navigation
 import com.salman.sagor.presentation.navigation.NavigationGraph
@@ -36,7 +38,15 @@ object MainGraph : NavigationGraph(startDestination = Routes.home, route = Graph
                     HomeScreen()
                 }
 
-                composable(Routes.pool()) {
+                composable(
+                    Routes.pool(),
+                    arguments = listOf(
+                        navArgument("id") {
+                            type = NavType.IntType
+                            defaultValue = -1
+                        }
+                    )
+                ) {
                     val id = it.arguments?.getInt("id") ?: -1
                     PoolScreen(id)
                 }

@@ -1,5 +1,6 @@
 package com.salman.sagor.data.source.farm
 
+import android.util.Log
 import com.salman.sagor.data.source.farm.model.TankDTO
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -11,10 +12,12 @@ class FarmRemoteDataSource @Inject constructor(
 ) {
 
     companion object {
-        private const val PATH_TANKS = "tanks/"
+        private const val PATH_TANKS = "https://sagor.onrender.com/api/v1/tanks/"
+        private const val TAG = "FarmRemoteDataSource"
     }
 
     suspend fun getTankById(id: Int): Result<TankDTO> = runCatching {
+        Log.d(TAG, "getTankById: Getting Tank by id: $id")
         val result = httpClient.get("$PATH_TANKS$id")
             .body<TankDTO>()
 
@@ -22,6 +25,7 @@ class FarmRemoteDataSource @Inject constructor(
     }
 
     suspend fun getAllTanks(): Result<List<TankDTO>> = runCatching {
+        Log.d(TAG, "getAllTanks: Getting all tanks")
         val result = httpClient.get(PATH_TANKS)
             .body<List<TankDTO>>()
 

@@ -1,13 +1,14 @@
 package com.salman.sagor.presentation.core
 
 import androidx.compose.ui.graphics.Color
-import com.salman.sagor.presentation.model.GraphValues
-import kotlin.random.Random
+import com.salman.sagor.domain.model.GraphValues
 
 
 val GraphValues.color: Color
-    get() = Color(
-        Random.nextInt(0, 255),
-        Random.nextInt(0, 255),
-        Random.nextInt(0, 255),
-    )
+    get(): Color {
+        return when (name) {
+            "Temperature" -> Color.Red
+            "pH" -> Color.Blue
+            else -> Color.Black
+        }
+    }

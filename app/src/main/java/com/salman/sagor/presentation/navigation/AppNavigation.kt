@@ -9,7 +9,6 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import com.salman.sagor.presentation.model.NavigationParams
-import com.salman.sagor.presentation.navigation.graphs.AuthGraph
 import com.salman.sagor.presentation.navigation.graphs.MainGraph
 import com.salman.sagor.presentation.navigation.graphs.OnboardingGraph
 
@@ -43,9 +42,9 @@ private fun createNavigationGraphs(navigationParams: NavigationParams): List<Nav
     val graphs = mutableListOf<NavigationGraph>()
     graphs.add(MainGraph)
 
-    if (!navigationParams.isUserLoggedIn) {
+    /*if (!navigationParams.isUserLoggedIn) {
         graphs.add(0, AuthGraph)
-    }
+    }*/
     if (!navigationParams.isOnboardingComplete) {
         graphs.add(0, OnboardingGraph)
     }

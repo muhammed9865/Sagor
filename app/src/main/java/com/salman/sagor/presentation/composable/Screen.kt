@@ -15,6 +15,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
@@ -29,8 +31,20 @@ fun Screen(
     onBackPressed: (() -> Unit)? = null,
     title: String? = null,
     actions: @Composable (RowScope.() -> Unit)? = null,
+    onEnteringScreen: (() -> Unit)? = null,
+    onLeavingScreen: (() -> Unit)? = null,
     content: @Composable () -> Unit
 ) {
+    if (onLeavingScreen != null) {
+        DisposableEffect(key1 = Unit) {
+            onDispose(onLeavingScreen)
+        }
+    }
+    if (onEnteringScreen != null) {
+        LaunchedEffect(Unit) {
+            onEnteringScreen()
+        }
+    }
     Column(
         modifier = modifier
             .fillMaxSize()

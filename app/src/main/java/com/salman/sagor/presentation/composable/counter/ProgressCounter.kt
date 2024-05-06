@@ -119,7 +119,7 @@ private fun DrawScope.drawProgressText(progress: Float) {
         textSize = fontSize
     }
 
-    val text = progress.toString().takeWhile { it != '.' }
+    val text = progress.toString().format("%.2f")
 
     val measuredWidth = paint.measureText(text)
     val measuredHeight = paint.fontMetrics.bottom - paint.fontMetrics.top

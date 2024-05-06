@@ -20,26 +20,30 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.salman.sagor.R
+import com.salman.sagor.domain.model.GraphValues
 import com.salman.sagor.domain.model.MetricValueType
-import com.salman.sagor.domain.model.Tank
 import com.salman.sagor.domain.model.PoolMetric
 import com.salman.sagor.presentation.composable.Graph
 import com.salman.sagor.presentation.composable.Screen
 import com.salman.sagor.presentation.composable.counter.ProgressCounter
 import com.salman.sagor.presentation.composable.counter.TextCounter
+import com.salman.sagor.presentation.core.color
+import com.salman.sagor.presentation.core.formatToString
 import com.salman.sagor.presentation.navigation.LocalNavigator
-import com.salman.sagor.presentation.screen.home.HomeViewModel
+import kotlinx.datetime.LocalDateTime
 
 /**
  * Created by Muhammed Salman email(mahmadslman@gmail.com) on 3/30/2024.
@@ -47,18 +51,18 @@ import com.salman.sagor.presentation.screen.home.HomeViewModel
 @Composable
 fun PoolScreen(
     poolId: Int,
-    homeViewModel: HomeViewModel = hiltViewModel()
+    tankViewModel: TankViewModel = hiltViewModel()
 ) {
     val navigator = LocalNavigator.current
     if (poolId == -1) navigator.popBackStack()
-
-    val pool = homeViewModel.pools.collectAsState().run {
-        value.first { it.id == poolId }
+    val state by tankViewModel.state.collectAsStateWithLifecycle()
+    LaunchedEffect(poolId) {
+        tankViewModel.handleAction(TankAction.LoadTank(poolId))
     }
 
     Screen(
         onBackPressed = navigator::popBackStack,
-        title = pool.name,
+        title = state.name,
         actions = {
             IconButton(onClick = { /*TODO Edit Name*/ }) {
                 Icon(
@@ -68,26 +72,34 @@ fun PoolScreen(
             }
         }
     ) {
-        PoolContent(pool)
+        PoolContent(state)
     }
 }
 
 @Composable
-private fun PoolContent(tank: Tank) {
+private fun PoolContent(state: TankState) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .background(MaterialTheme.colorScheme.background),
         verticalArrangement = Arrangement.spacedBy(32.dp)
     ) {
-        PoolGraph(tank)
-        MetricsSection(tank.metrics)
+        PoolGraph(
+            sensorsHistory = state.sensorsHistory
+        )
+        MetricsSection(
+            lastUpdated = state.lastUpdated,
+            metrics = state.currentReadings
+        )
     }
 }
 
 @Composable
-private fun PoolGraph(tank: Tank, modifier: Modifier = Modifier) {
-    val namesAndColors = tank.history.map { it.name to it.color }
+private fun PoolGraph(
+    sensorsHistory: List<GraphValues>,
+    modifier: Modifier = Modifier
+) {
+    val namesAndColors = sensorsHistory.map { it.name to it.color }
     Column(
         modifier
             .fillMaxWidth()
@@ -96,9 +108,7 @@ private fun PoolGraph(tank: Tank, modifier: Modifier = Modifier) {
             modifier = Modifier
                 .fillMaxWidth()
                 .aspectRatio(4 / 1.5f),
-            xValues = tank.xValues,
-            yValues = tank.yValues,
-            values = tank.history,
+            values = sensorsHistory,
         )
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -113,7 +123,8 @@ private fun PoolGraph(tank: Tank, modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun MetricsSection(metrics: List<PoolMetric>) {
+private fun MetricsSection(lastUpdated: LocalDateTime, metrics: List<PoolMetric>) {
+    val context = LocalContext.current
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -130,7 +141,10 @@ private fun MetricsSection(metrics: List<PoolMetric>) {
                 style = MaterialTheme.typography.labelLarge,
                 color = MaterialTheme.colorScheme.onBackground
             )
-            Text(text = "Last updated 2 minutes ago", style = MaterialTheme.typography.bodySmall)
+            Text(
+                text = stringResource(R.string.last_updated, lastUpdated.formatToString(context)),
+                style = MaterialTheme.typography.bodySmall
+            )
 
         }
         Row(

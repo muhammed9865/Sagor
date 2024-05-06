@@ -32,6 +32,10 @@ class UserRepository @Inject constructor(
             if (isSent.not()) {
                 throw Exception("OTP not sent")
             }
+        }.also {
+            if (it.isFailure) {
+                it.exceptionOrNull()!!.printStackTrace()
+            }
         }
     }
 

@@ -6,8 +6,9 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class TankDTO(
+    val id: Int,
     @SerialName("fish_type")
     val fishType: String,
-    val packages: List<Package>,
+    val packages: List<PackageDTO>,
     val status: String
 )
