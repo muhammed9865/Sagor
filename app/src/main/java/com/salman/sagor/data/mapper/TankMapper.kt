@@ -2,6 +2,7 @@ package com.salman.sagor.data.mapper
 
 import com.salman.sagor.data.source.farm.model.PackageDTO
 import com.salman.sagor.data.source.farm.model.TankDTO
+import com.salman.sagor.domain.model.COUNTER_START_ANGLE
 import com.salman.sagor.domain.model.GraphValues
 import com.salman.sagor.domain.model.MetricValueType
 import com.salman.sagor.domain.model.Package
@@ -75,6 +76,14 @@ private fun PackageDTO.getLastUpdatedDate(): LocalDateTime {
 private fun createBoundaryValues(to: Int): List<Int> {
     val from = 0
     val count = 4
-    val stepSize = (to - from) / count
-    return (0 until count).map { index -> from + index * stepSize }
+
+    fun getValueForIndex(index: Int): Int = run {
+        when (index) {
+            0 -> from
+            in 1 until count - 1 -> (COUNTER_START_ANGLE.toInt() * (index) * to) / 360 // value = (START_ANGLE (135) * index  * to) / 360 (circle)
+            else -> to
+        }
+
+    }
+    return List(count, ::getValueForIndex)
 }

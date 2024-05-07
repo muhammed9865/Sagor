@@ -23,6 +23,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
+import com.salman.sagor.domain.model.COUNTER_START_ANGLE
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -140,7 +141,7 @@ private fun DrawScope.drawBoundaryValues(
         this.textSize = textSize
     }
 
-    var degree = 135.0 // initially 135 as a start.
+    var degree = COUNTER_START_ANGLE // initially 135 as a start.
     val stepSize = 360 / maxOf(values.size, 4)
     val valueMargin = 30
 
