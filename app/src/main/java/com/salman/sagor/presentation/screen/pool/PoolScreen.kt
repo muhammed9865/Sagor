@@ -40,6 +40,7 @@ import com.salman.sagor.presentation.composable.Graph
 import com.salman.sagor.presentation.composable.Screen
 import com.salman.sagor.presentation.composable.counter.ProgressCounter
 import com.salman.sagor.presentation.composable.counter.TextCounter
+import com.salman.sagor.presentation.core.boundaryValues
 import com.salman.sagor.presentation.core.color
 import com.salman.sagor.presentation.core.formatToString
 import com.salman.sagor.presentation.navigation.LocalNavigator
@@ -185,7 +186,7 @@ private fun RowScope.PoolMetric(metric: PoolMetric) {
 
             MetricValueType.Text -> {
                 TextCounter(
-                    text = "${progressAnimated.toInt()}",
+                    text = stringResource(R.string.metric_float_value, progressAnimated),
                     textColor = Color(0xFF023E8A),
                     boundaryValues = metric.boundaryValues,
                     name = metric.name,

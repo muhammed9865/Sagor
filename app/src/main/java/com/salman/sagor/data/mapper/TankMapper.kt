@@ -2,11 +2,15 @@ package com.salman.sagor.data.mapper
 
 import com.salman.sagor.data.source.farm.model.PackageDTO
 import com.salman.sagor.data.source.farm.model.TankDTO
-import com.salman.sagor.domain.model.COUNTER_START_ANGLE
 import com.salman.sagor.domain.model.GraphValues
+import com.salman.sagor.domain.model.IS_TESTING
 import com.salman.sagor.domain.model.MetricValueType
+import com.salman.sagor.domain.model.PH_MAX_VALUE
+import com.salman.sagor.domain.model.PH_SENSOR
 import com.salman.sagor.domain.model.Package
 import com.salman.sagor.domain.model.PoolMetric
+import com.salman.sagor.domain.model.TEMPERATURE_MAX_VALUE
+import com.salman.sagor.domain.model.TEMPERATURE_SENSOR
 import com.salman.sagor.domain.model.Tank
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDateTime
@@ -14,8 +18,6 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import kotlin.random.Random
 
-private const val PH_MAX_VALUE = 10f
-private const val TEMPERATURE_MAX_VALUE = 100f
 
 fun TankDTO.toDomainTank(): Tank {
     return Tank(
@@ -49,23 +51,31 @@ private fun PackageDTO.getSensorsHistory(): List<GraphValues> {
 }
 
 private fun PackageDTO.getCurrentTankMetrics(): List<PoolMetric> {
-    val currentPHReadings = phSensorReadings.last().value.toFloat()
-    val currentTemperatureReadings = tempratureSensorReadings.last().value.toFloat()
+    val currentPHReadings = if (!IS_TESTING)
+        phSensorReadings.last().value.toFloat()
+    else
+        getTestingPHValue()
+
+    val currentTemperatureReadings = if (!IS_TESTING)
+        tempratureSensorReadings.last().value.toFloat()
+    else
+        getTestingTemperatureValue()
+
     val pHPoolMetric = PoolMetric(
-        name = "pH",
+        name = PH_SENSOR,
         value = currentPHReadings,
         maxValue = PH_MAX_VALUE,
-        boundaryValues = createBoundaryValues(PH_MAX_VALUE.toInt()),
         valueType = MetricValueType.Progress,
     )
     val temperaturePoolMetric = PoolMetric(
-        name = "Temperature",
+        name = TEMPERATURE_SENSOR,
         value = currentTemperatureReadings,
         maxValue = TEMPERATURE_MAX_VALUE,
-        boundaryValues = createBoundaryValues(TEMPERATURE_MAX_VALUE.toInt()),
         valueType = MetricValueType.Progress
     )
 
+    if (IS_TESTING)
+        testingCount = (testingCount + 1) % 10
     return listOf(pHPoolMetric, temperaturePoolMetric)
 }
 
@@ -73,17 +83,13 @@ private fun PackageDTO.getLastUpdatedDate(): LocalDateTime {
     return Instant.parse(lastCheckedAt).toLocalDateTime(TimeZone.currentSystemDefault())
 }
 
-private fun createBoundaryValues(to: Int): List<Int> {
-    val from = 0
-    val count = 4
+private var testingCount = 0
+private fun getTestingPHValue(): Float {
+    val stepSize = PH_MAX_VALUE / 10
+    return stepSize * testingCount
+}
 
-    fun getValueForIndex(index: Int): Int = run {
-        when (index) {
-            0 -> from
-            in 1 until count - 1 -> (COUNTER_START_ANGLE.toInt() * (index) * to) / 360 // value = (START_ANGLE (135) * index  * to) / 360 (circle)
-            else -> to
-        }
-
-    }
-    return List(count, ::getValueForIndex)
+private fun getTestingTemperatureValue(): Float {
+    val stepSize = TEMPERATURE_MAX_VALUE / 10
+    return stepSize * testingCount
 }

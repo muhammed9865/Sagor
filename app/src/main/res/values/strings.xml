@@ -16,4 +16,5 @@
     <!-- Day Month Year at Hour Minute -->
     <string name="date_at">%1$s %2$s %3$d at %4$s:%5$s</string>
     <string name="last_updated">Last updated %1$s</string>
+    <string name="metric_float_value">%.2f</string>
 </resources>

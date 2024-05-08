@@ -7,7 +7,6 @@ data class PoolMetric(
     val name: String,
     val value: Float,
     val maxValue: Float,
-    val boundaryValues: List<Int>,
     val valueType: MetricValueType,
 )
 
