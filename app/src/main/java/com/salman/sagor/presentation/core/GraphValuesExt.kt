@@ -23,6 +23,6 @@ val PoolMetric.boundaryValues: List<Int>
         when (this.name) {
             PH_SENSOR -> listOf(0, 4, 6, PH_MAX_VALUE.toInt())
             TEMPERATURE_SENSOR -> listOf(0, 40, 60, TEMPERATURE_MAX_VALUE.toInt())
-            else -> throw IllegalArgumentException("Unknown sensor name")
+            else -> listOf(0, 100, 200, 400) // Default values
         }
     }

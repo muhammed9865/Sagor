@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -38,6 +39,7 @@ import com.salman.sagor.domain.model.MetricValueType
 import com.salman.sagor.domain.model.PoolMetric
 import com.salman.sagor.presentation.composable.Graph
 import com.salman.sagor.presentation.composable.Screen
+import com.salman.sagor.presentation.composable.ShimmerContainer
 import com.salman.sagor.presentation.composable.counter.ProgressCounter
 import com.salman.sagor.presentation.composable.counter.TextCounter
 import com.salman.sagor.presentation.core.boundaryValues
@@ -85,12 +87,20 @@ private fun PoolContent(state: TankState) {
             .background(MaterialTheme.colorScheme.background),
         verticalArrangement = Arrangement.spacedBy(32.dp)
     ) {
-        PoolGraph(
-            sensorsHistory = state.sensorsHistory
-        )
+        ShimmerContainer(enabled = state.isLoading) {
+            val loadingModifier = if (state.isLoading) Modifier
+                .fillMaxWidth()
+                .height(200.dp)
+            else Modifier
+            PoolGraph(
+                sensorsHistory = state.sensorsHistory,
+                modifier = loadingModifier
+            )
+        }
         MetricsSection(
             lastUpdated = state.lastUpdated,
-            metrics = state.currentReadings
+            metrics = state.currentReadings,
+            isLoading = state.isLoading
         )
     }
 }
@@ -124,7 +134,11 @@ private fun PoolGraph(
 }
 
 @Composable
-private fun MetricsSection(lastUpdated: LocalDateTime, metrics: List<PoolMetric>) {
+private fun MetricsSection(
+    lastUpdated: LocalDateTime,
+    metrics: List<PoolMetric>,
+    isLoading: Boolean = false
+) {
     val context = LocalContext.current
     Column(
         modifier = Modifier
@@ -152,22 +166,38 @@ private fun MetricsSection(lastUpdated: LocalDateTime, metrics: List<PoolMetric>
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            metrics.forEach { metric ->
-                PoolMetric(metric)
+            if (isLoading) {
+                repeat(2) {
+                    ShimmerContainer(
+                        modifier = Modifier
+                            .weight(1f)
+                            .aspectRatio(1f)
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(4.dp)
+                        )
+                    }
+                }
+            } else {
+                metrics.forEach { metric ->
+                    PoolMetric(metric)
+                }
             }
         }
     }
 }
 
 @Composable
-private fun RowScope.PoolMetric(metric: PoolMetric) {
+private fun RowScope.PoolMetric(metric: PoolMetric, modifier: Modifier = Modifier) {
     val progressAnimated by animateFloatAsState(
         targetValue = metric.value, label = "",
         animationSpec = tween(500)
     )
 
     Surface(
-        modifier = Modifier
+        modifier = modifier
             .weight(1f)
             .aspectRatio(1f),
         shape = MaterialTheme.shapes.extraSmall,
