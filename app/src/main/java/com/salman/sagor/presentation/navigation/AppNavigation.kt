@@ -42,6 +42,7 @@ private fun createNavigationGraphs(navigationParams: NavigationParams): List<Nav
     val graphs = mutableListOf<NavigationGraph>()
     graphs.add(MainGraph)
 
+    // TODO: Uncomment this when Auth feature is needed يا خسارة
     /*if (!navigationParams.isUserLoggedIn) {
         graphs.add(0, AuthGraph)
     }*/
