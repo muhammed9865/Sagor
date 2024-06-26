@@ -18,7 +18,7 @@ class FarmRemoteDataSource @Inject constructor(
 
     suspend fun getTankById(id: Int): Result<TankDTO> = runCatching {
         Log.d(TAG, "getTankById: Getting Tank by id: $id")
-        val result = httpClient.get("$PATH_TANKS$id")
+        val result = httpClient.get("tanks/$id")
             .body<TankDTO>()
 
         result
@@ -26,7 +26,7 @@ class FarmRemoteDataSource @Inject constructor(
 
     suspend fun getAllTanks(): Result<List<TankDTO>> = runCatching {
         Log.d(TAG, "getAllTanks: Getting all tanks")
-        val result = httpClient.get(PATH_TANKS)
+        val result = httpClient.get("tanks/")
             .body<List<TankDTO>>()
 
         result

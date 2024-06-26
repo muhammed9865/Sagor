@@ -1,6 +1,7 @@
 package com.salman.sagor.data.di
 
 import android.content.Context
+import com.salman.sagor.data.source.RemoteConstants.BASE_URL
 import com.salman.sagor.data.source.user.UserLocalDataSource
 import dagger.Module
 import dagger.Provides
@@ -39,6 +40,7 @@ class RepositoryModule {
             }
             install(DefaultRequest) {
                 header("Content-Type", "application/json")
+                url(BASE_URL)
             }
             install(Logging) {
                 level = LogLevel.ALL

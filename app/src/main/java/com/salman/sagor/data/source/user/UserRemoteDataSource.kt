@@ -27,14 +27,14 @@ class UserRemoteDataSource @Inject constructor(
     }
 
     suspend fun sendOTP(phoneNumber: String): UserSendOTPStatus {
-        val result = client.post("/auth/send-otp/") {
+        val result = client.post("auth/send-otp/") {
             setBody(SendOTPDTO(phoneNumber))
         }
         return matchSendOTPStatus(result)
     }
 
     suspend fun verifyOTP(phoneNumber: String, otp: String): UserVerifyOTPStatus {
-        val result = client.post("/auth/verify-otp/") {
+        val result = client.post("auth/verify-otp/") {
             setBody(VerifyOTPDTO("01062024268", otp))
         }
         return mapVerifyOTPStatus(result)
