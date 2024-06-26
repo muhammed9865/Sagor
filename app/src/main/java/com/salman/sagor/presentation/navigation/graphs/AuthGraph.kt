@@ -13,7 +13,7 @@ import com.salman.sagor.presentation.screen.login.VerifyLoginScreen
 /**
  * Created by Muhammed Salman email(mahmadslman@gmail.com) on 3/29/2024.
  */
-object AuthGraph : NavigationGraph(startDestination = "login", route = "auth") {
+object AuthGraph : NavigationGraph(startDestination = "login", route = Graphs.auth) {
 
     override fun navigation(navController: NavController, navGraphBuilder: NavGraphBuilder) =
         with(navGraphBuilder) {

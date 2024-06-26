@@ -20,6 +20,7 @@ fun TextCounter(
     modifier: Modifier = Modifier,
     text: String,
     textColor: Color,
+    name: String,
     boundaryValues: List<Int>,
 ) {
     val leftHalfColor = Color(0xff030DF4)
@@ -29,6 +30,8 @@ fun TextCounter(
         boundaryValues = boundaryValues,
         leftBoundaryValuesColor = leftHalfColor,
         rightBoundaryValuesColor = rightHalfColor,
+        name = name,
+        nameColor = textColor,
     ) {
         TextCounterContent(
             text = text,
@@ -62,7 +65,8 @@ private fun TextCounterPrev() {
         TextCounter(
             text = "9489984.18 mg/L", boundaryValues = listOf(0, 100, 200, 400),
             modifier = Modifier.fillMaxSize(),
-            textColor = Color(0xFF007813)
+            textColor = Color(0xFF007813),
+            name = "Temperature"
         )
     }
 }

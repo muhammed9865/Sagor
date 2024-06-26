@@ -13,14 +13,33 @@ import javax.inject.Inject
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val repository: UserRepository,
-): MVIViewModel<LoginAction, LoginState>(LoginState()) {
+) : MVIViewModel<LoginAction, LoginState>(LoginState()) {
+
+    init {
+        println("LoginViewModel created")
+    }
     override fun handleAction(action: LoginAction) {
         when (action) {
-            is LoginAction.PhoneNumberChanged -> { updatePhoneNumber(action.phoneNumber) }
-            is LoginAction.LoginClicked -> { login() }
-            is LoginAction.OtpChanged -> { updateOtp(action.otp) }
-            is LoginAction.ResendOtpClicked -> { resendOtp() }
-            is LoginAction.VerifyOTP -> { }
+            is LoginAction.PhoneNumberChanged -> {
+                updatePhoneNumber(action.phoneNumber)
+            }
+
+            is LoginAction.LoginClicked -> {
+                login()
+            }
+
+            is LoginAction.OtpChanged -> {
+                updateOtp(action.otp)
+            }
+
+            is LoginAction.ResendOtpClicked -> {
+                resendOtp()
+            }
+
+            is LoginAction.VerifyOTP -> {
+                verifyOTP()
+            }
+
             is LoginAction.NavigatedToVerification -> {
                 updateState { copy(isOtpSent = false) }
             }
@@ -44,7 +63,11 @@ class LoginViewModel @Inject constructor(
         viewModelScope.launch {
             val isOtpSent = repository.login(phoneNumber).isSuccess
             updateState {
-                copy(isLoggingIn = false, isOtpSent = isOtpSent)
+                copy(
+                    isLoggingIn = false,
+                    isOtpSent = isOtpSent,
+                    message = if (isOtpSent) "" else "Something went wrong, please try again."
+                )
             }
         }
     }
@@ -60,7 +83,40 @@ class LoginViewModel @Inject constructor(
 
     private fun resendOtp() {
         viewModelScope.launch {
-            repository.resendOTP(state.value.phoneNumber)
+            val phoneNumber = state.value.phoneNumber.replace(" ", "")
+            repository.login(phoneNumber).onSuccess {
+                updateTemporarilyState(resetState = state.value.copy(message = "")) {
+                    copy(message = "A new OTP has been sent to your phone number.")
+                }
+            }
+        }
+    }
+
+    private fun verifyOTP() {
+        val phoneNumber = state.value.phoneNumber.replace(" ", "")
+        val otp = state.value.otp.replace(" ", "")
+        updateState {
+            copy(isVerifyingOtp = true)
+        }
+        viewModelScope.launch {
+            val isVerified = repository.verifyOTP(phoneNumber, otp).isSuccess
+            if (isVerified) {
+                updateState {
+                    copy(
+                        isVerifyingOtp = false,
+                        navigateToHome = true,
+                    )
+                }
+            } else {
+                updateState {
+                    copy(isVerifyingOtp = false)
+                }
+                updateTemporarilyState(
+                    resetState = state.value.copy(message = "")
+                ) {
+                    copy(message = "Invalid OTP, please try again.")
+                }
+            }
         }
     }
 }

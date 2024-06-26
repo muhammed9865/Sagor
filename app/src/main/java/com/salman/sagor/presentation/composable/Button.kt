@@ -19,13 +19,15 @@ fun SPrimaryButton(
     modifier: Modifier = Modifier,
     text: String,
     isLoading: Boolean = false,
+    isEnabled: Boolean = true,
     onClick: () -> Unit = {}
 ) {
     Button(
         onClick = onClick,
         modifier = modifier.fillMaxWidth(),
         contentPadding = PaddingValues(16.dp),
-        shape = MaterialTheme.shapes.small
+        shape = MaterialTheme.shapes.small,
+        enabled = isEnabled,
     ) {
         if (isLoading.not()) {
             Text(text = text)

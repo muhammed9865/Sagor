@@ -1,4 +1,4 @@
-package com.salman.sagor.data.model
+package com.salman.sagor.domain.model
 
 /**
  * Created by Muhammed Salman email(mahmadslman@gmail.com) on 3/30/2024.

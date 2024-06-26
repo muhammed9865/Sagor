@@ -22,11 +22,14 @@ import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.salman.sagor.R
 import com.salman.sagor.presentation.composable.SClickableText
 import com.salman.sagor.presentation.composable.SPrimaryButton
 import com.salman.sagor.presentation.composable.Screen
+import com.salman.sagor.presentation.composable.ShowToast
 import com.salman.sagor.presentation.navigation.LocalNavigator
+import com.salman.sagor.presentation.navigation.graphs.Graphs
 
 /**
  * Created by Muhammed Salman email(mahmadslman@gmail.com) on 3/30/2024.
@@ -38,6 +41,9 @@ fun VerifyLoginScreen(
     val state by viewModel.state.collectAsState()
     val navigator = LocalNavigator.current
     viewModel.handleAction(LoginAction.NavigatedToVerification)
+
+    ShowToast(message = state.message)
+    handleNavigation(navigator, state)
 
     VerifyLoginContent(
         state = state,
@@ -123,7 +129,10 @@ private fun FormSection(
             ),
             singleLine = true,
         )
-        SPrimaryButton(text = stringResource(R.string.verify), isLoading = state.isLoggingIn) {
+        SPrimaryButton(
+            text = stringResource(R.string.verify), isLoading = state.isVerifyingOtp,
+            isEnabled = state.isOtpValid
+        ) {
             onAction(LoginAction.VerifyOTP)
         }
         SClickableText(
@@ -132,5 +141,11 @@ private fun FormSection(
         ) {
             onAction(LoginAction.ResendOtpClicked)
         }
+    }
+}
+
+private fun handleNavigation(navigator: NavController, state: LoginState) {
+    if (state.navigateToHome) {
+        navigator.navigate(Graphs.main)
     }
 }

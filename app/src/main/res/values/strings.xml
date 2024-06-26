@@ -8,4 +8,13 @@
     <string name="verify">Verify</string>
     <string name="home">Home</string>
     <string name="view">View</string>
+    <string name="readings">Readings</string>
+    <string name="no_tanks_found_please_contact_us_for_more_information">Couldn\'t find tanks</string>
+    <string name="reload">Reload</string>
+    <string name="today_at">Today at %1$s:%2$s</string>
+    <string name="yesterday_at">Yesterday at %1$s:%2$s</string>
+    <!-- Day Month Year at Hour Minute -->
+    <string name="date_at">%1$s %2$s %3$d at %4$s:%5$s</string>
+    <string name="last_updated">Last updated %1$s</string>
+    <string name="metric_float_value">%.2f</string>
 </resources>

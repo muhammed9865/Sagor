@@ -14,35 +14,36 @@ import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.salman.sagor.domain.model.GraphValues
 import com.salman.sagor.presentation.core.animateListOfFloats
-import com.salman.sagor.presentation.model.GraphValues
+import com.salman.sagor.presentation.core.color
 
 /**
  * Created by Muhammed Salman email(mahmadslman@gmail.com) on 3/31/2024.
  */
 
+private const val DEFAULT_STEPS = 5
+
 @Composable
 fun Graph(
     modifier: Modifier = Modifier,
-    xValues: List<Int>,
-    yValues: List<Int>,
     values: List<GraphValues>,
     padding: Dp = 5.dp,
 ) {
 
     val valuesAnimated = values.map {
-        animateListOfFloats(targetFractions = it.values)
+        animateListOfFloats(targetFractions = it.history)
     }
     Canvas(
         modifier = modifier
             .padding(padding)
     ) {
-        val xAxisStepSize = (size.width) / xValues.size
+        val xAxisStepSize =
+            (size.width) / (values.map { it.history }.maxOfOrNull { it.size } ?: DEFAULT_STEPS)
+        // normalize values to be within the bounds of the graph
         values.forEachIndexed { index, graphValues ->
             drawPointsLine(
                 points = valuesAnimated[index].slices,
-                xValues = xValues,
-                yValues = yValues,
                 xAxisStepSize = xAxisStepSize,
                 color = graphValues.color,
                 drawCircles = false
@@ -53,8 +54,6 @@ fun Graph(
 
 private fun DrawScope.drawPointsLine(
     points: List<State<Float>>,
-    xValues: List<Int>,
-    yValues: List<Int>,
     xAxisStepSize: Float,
     color: Color,
     drawCircles: Boolean = false,
@@ -68,11 +67,15 @@ private fun DrawScope.drawPointsLine(
     val height = size.height
 
     for (i in points.indices) {
-        val x1 = if (i == 0) 0f else xAxisStepSize * xValues[i]
+        // normalize the x value to be within the bounds of the graph
+        val x1 = maxOf(
+            0f,
+            minOf(size.width, xAxisStepSize * i)
+        )
         // ensure the points are within the bounds of the graph
         val y1 = maxOf(
             0f,
-            minOf(height, height - (points[i].value * height) / yValues.maxOrNull()!!)
+            minOf(height, height - (points[i].value * height))
         )
         coordinates.add(PointF(x1, y1))
         /** drawing circles to indicate all the points */
@@ -85,18 +88,24 @@ private fun DrawScope.drawPointsLine(
 
     }
 
-    // Used for drawing the Bezier curve
+    /** Used for drawing the Bezier curve
+    Getting two control points to control the curve
+    First one is in center between current point and previous one and in the same height
+    as the previous point
+    Second one is in center between current point and previous one and in the same height
+    as the current point
+     **/
     for (i in 1 until coordinates.size) {
-        val c1 = PointF(
+        val previousPointControl = PointF(
             (coordinates[i].x + coordinates[i - 1].x) / 2,
             coordinates[i - 1].y
         )
-        val c2 = PointF(
+        val currentPointControl = PointF(
             (coordinates[i].x + coordinates[i - 1].x) / 2,
             coordinates[i].y
         )
-        controlPoints1.add(c1)
-        controlPoints2.add(c2)
+        controlPoints1.add(previousPointControl)
+        controlPoints2.add(currentPointControl)
     }
 
     val stroke = Path().apply {
@@ -120,14 +129,5 @@ private fun DrawScope.drawPointsLine(
             width = strokeWidth,
             cap = StrokeCap.Round
         )
-    )
-}
-
-fun randomColor(): Color {
-    return Color(
-        red = (0..255).random() / 255f,
-        green = (0..255).random() / 255f,
-        blue = (0..255).random() / 255f,
-        alpha = 1f
     )
 }

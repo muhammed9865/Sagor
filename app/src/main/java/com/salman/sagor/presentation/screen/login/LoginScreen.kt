@@ -13,6 +13,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -25,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import com.salman.sagor.R
 import com.salman.sagor.presentation.composable.SPrimaryButton
 import com.salman.sagor.presentation.composable.Screen
+import com.salman.sagor.presentation.composable.ShowToast
 import com.salman.sagor.presentation.navigation.LocalNavigator
 
 /**
@@ -38,9 +40,13 @@ fun LoginScreen(
     val state by viewModel.state.collectAsState()
     val navigator = LocalNavigator.current
 
-    if (state.isOtpSent) {
-        navigator.navigate("verify")
+    LaunchedEffect(state.isOtpSent) {
+        if (state.isOtpSent) {
+            navigator.navigate("verify")
+        }
     }
+
+    ShowToast(message = state.message)
 
     Screen {
         Column(
@@ -118,7 +124,11 @@ private fun FormSection(
             ),
             singleLine = true,
         )
-        SPrimaryButton(text = stringResource(R.string.login), isLoading = state.isLoggingIn) {
+        SPrimaryButton(
+            text = stringResource(R.string.login),
+            isLoading = state.isLoggingIn,
+            isEnabled = state.isPhoneNumberValid
+        ) {
             onAction(LoginAction.LoginClicked)
         }
     }
