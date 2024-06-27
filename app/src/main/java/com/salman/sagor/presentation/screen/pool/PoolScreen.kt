@@ -6,20 +6,27 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -30,6 +37,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -37,6 +48,9 @@ import com.salman.sagor.R
 import com.salman.sagor.domain.model.GraphValues
 import com.salman.sagor.domain.model.MetricValueType
 import com.salman.sagor.domain.model.PoolMetric
+import com.salman.sagor.domain.model.PumpActivityItem
+import com.salman.sagor.domain.model.PumpActivityStatus
+import com.salman.sagor.presentation.composable.BorderedSurface
 import com.salman.sagor.presentation.composable.Graph
 import com.salman.sagor.presentation.composable.Screen
 import com.salman.sagor.presentation.composable.ShimmerContainer
@@ -46,7 +60,10 @@ import com.salman.sagor.presentation.core.boundaryValues
 import com.salman.sagor.presentation.core.color
 import com.salman.sagor.presentation.core.formatToString
 import com.salman.sagor.presentation.navigation.LocalNavigator
+import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 
 /**
  * Created by Muhammed Salman email(mahmadslman@gmail.com) on 3/30/2024.
@@ -102,6 +119,17 @@ private fun PoolContent(state: TankState) {
             metrics = state.currentReadings,
             isLoading = state.isLoading
         )
+        val date = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
+        val pumpActivity = listOf(
+            PumpActivityItem(1, date, PumpActivityStatus.SUCCESS),
+            PumpActivityItem(2, date, PumpActivityStatus.SUCCESS),
+            PumpActivityItem(3, date, PumpActivityStatus.SUCCESS),
+            PumpActivityItem(4, date, PumpActivityStatus.SUCCESS),
+        )
+        PumpActivityList(
+            activity = pumpActivity,
+            onAction = { }
+        )
     }
 }
 
@@ -142,8 +170,7 @@ private fun MetricsSection(
     val context = LocalContext.current
     Column(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp),
+            .fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         Row(
@@ -247,3 +274,117 @@ private fun GraphLegend(name: String, color: Color) {
         )
     }
 }
+
+@Composable
+private fun PumpActivityList(
+    modifier: Modifier = Modifier,
+    activity: List<PumpActivityItem> = emptyList(),
+    onAction: (TankAction) -> Unit
+) {
+    Column(
+        modifier = modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        Row(
+            Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                text = stringResource(R.string.activity),
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.onBackground
+            )
+            TextButton(
+                onClick = { },
+                modifier = Modifier.padding(8.dp)
+            ) {
+                Text(text = stringResource(R.string.see_all))
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                    contentDescription = null
+                )
+            }
+        }
+        BorderedSurface(
+            modifier = Modifier.padding(bottom = 16.dp)
+        ) {
+            LazyColumn(
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                contentPadding = PaddingValues(8.dp)
+            ) {
+                items(activity) {
+                    PumpActivityItem(item = it)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun PumpActivityItem(
+    modifier: Modifier = Modifier,
+    item: PumpActivityItem,
+) {
+    Column(
+        modifier = modifier.fillMaxWidth()
+    ) {
+        Text(
+            text = item.date.formatToString(LocalContext.current),
+            style = MaterialTheme.typography.bodyMedium
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        TextWithColor(
+            label = "Action taken",
+            value = "Food pumped",
+            color = Color(0xFFCD3131)
+        )
+        TextWithColor(
+            label = "Status",
+            value = item.status.name.lowercase().replaceFirstChar { it.uppercase() },
+            color = Color(0xFF3BB74F)
+        )
+    }
+}
+
+@Composable
+private fun TextWithColor(
+    modifier: Modifier = Modifier,
+    label: String,
+    value: String,
+    color: Color,
+) {
+    val text = buildAnnotatedString {
+        withStyle(
+            MaterialTheme.typography.bodyMedium.toSpanStyle().copy(
+                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
+                fontWeight = FontWeight.Bold
+            )
+        ) {
+            append(label)
+            append(": ")
+        }
+        withStyle(
+            MaterialTheme.typography.bodyMedium.toSpanStyle().copy(
+                color = color,
+                fontWeight = FontWeight.Bold
+            )
+        ) {
+            append(value)
+        }
+    }
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(4.dp)
+    ) {
+        Box(
+            Modifier
+                .size(6.dp)
+                .clip(CircleShape)
+                .background(Color(0xFFA4B0BF)),
+        )
+        Text(modifier = modifier, text = text, textAlign = TextAlign.Center)
+    }
+}
+

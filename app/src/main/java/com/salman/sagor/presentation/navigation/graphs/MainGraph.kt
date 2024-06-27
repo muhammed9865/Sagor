@@ -8,6 +8,7 @@ import androidx.navigation.navArgument
 import androidx.navigation.navDeepLink
 import androidx.navigation.navigation
 import com.salman.sagor.presentation.navigation.NavigationGraph
+import com.salman.sagor.presentation.screen.alerts.AlertsScreen
 import com.salman.sagor.presentation.screen.home.HomeScreen
 import com.salman.sagor.presentation.screen.pool.PoolScreen
 
@@ -18,6 +19,7 @@ object MainGraph : NavigationGraph(startDestination = Routes.home, route = Graph
 
     object Routes {
         const val home = "home"
+        const val alerts = "alerts"
         fun pool(id: Int = -1) = "pool/${if (id == -1) "{id}" else id}"
     }
 
@@ -49,6 +51,10 @@ object MainGraph : NavigationGraph(startDestination = Routes.home, route = Graph
                 ) {
                     val id = it.arguments?.getInt("id") ?: -1
                     PoolScreen(id)
+                }
+
+                composable(Routes.alerts) {
+                    AlertsScreen()
                 }
             }
         }

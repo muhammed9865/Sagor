@@ -1,10 +1,7 @@
 package com.salman.sagor.presentation.screen.home
 
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -15,7 +12,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -30,6 +26,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.dropUnlessResumed
 import com.salman.sagor.R
 import com.salman.sagor.domain.model.Tank
+import com.salman.sagor.presentation.composable.BorderedSurface
 import com.salman.sagor.presentation.composable.Graph
 import com.salman.sagor.presentation.composable.Screen
 import com.salman.sagor.presentation.navigation.LocalNavigator
@@ -49,7 +46,9 @@ fun HomeScreen(
     Screen(
         title = stringResource(R.string.home),
         actions = {
-            IconButton(onClick = {}) {
+            IconButton(onClick = {
+                navigator.navigate(MainGraph.Routes.alerts)
+            }) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_notification),
                     contentDescription = "Notification"
@@ -83,14 +82,7 @@ private fun PoolItem(
     modifier: Modifier = Modifier,
     onClicked: () -> Unit = {}
 ) {
-    Surface(
-        modifier
-            .fillMaxWidth()
-            .aspectRatio(1.7777f)
-            .clickable { onClicked() },
-        border = BorderStroke(1.dp, color = MaterialTheme.colorScheme.outline),
-        shape = MaterialTheme.shapes.small
-    ) {
+    BorderedSurface(modifier) {
         Column(
             Modifier
                 .fillMaxSize()
