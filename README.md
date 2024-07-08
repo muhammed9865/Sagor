@@ -21,10 +21,10 @@ I have tried to minimize the usage of Third-party libs to produce a light-weight
 - Splash Screen API: We needed some customization in the splash screen.
 
 
-
+## Sagor Artwork
 <span>
   <img src="https://github.com/muhammed9865/Sagor/assets/84887514/7d038562-a94f-4491-84db-cdc6e771fab0" width=400 height=560/>
   <img src="https://github.com/muhammed9865/Sagor/assets/84887514/cdd742a1-d86e-444c-9c58-a7da35c6ac55" width=400 height=560/>
-  <img src="https://github.com/muhammed9865/Sagor/assets/84887514/6aba1776-908a-4ba5-9441-9e1b1d5d1467" width=400 height=560/>
+  <img src="https://github.com/muhammed9865/Sagor/assets/84887514/6aba1776-908a-4ba5-9441-9e1b1d5d1467" height=560/>
   <video src="https://github.com/muhammed9865/Sagor/assets/84887514/aa00308c-b3e8-4569-bf61-58d2fe78b47e" width="200" height="100" controls />
 </span>
